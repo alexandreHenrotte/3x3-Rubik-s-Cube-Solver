@@ -22,13 +22,13 @@ public class Rotation
         switch (face.rotatingAxe)
         {
             case RotatingAxe.X:
-                quaternionToReach = Quaternion.Euler(face.rotatingParent.transform.rotation.eulerAngles.x + (90 * rotationInverter), 0, 0);
+                quaternionToReach = face.rotatingParent.transform.rotation * Quaternion.Euler((90 * rotationInverter), 0, 0);
                 break;
             case RotatingAxe.Y:
-                quaternionToReach = Quaternion.Euler(0, face.rotatingParent.transform.rotation.eulerAngles.y + (90 * rotationInverter), 0);
+                quaternionToReach = face.rotatingParent.transform.rotation * Quaternion.Euler(0, (90 * rotationInverter), 0);
                 break;
             case RotatingAxe.Z:
-                quaternionToReach = Quaternion.Euler(0, 0, face.rotatingParent.transform.rotation.eulerAngles.z + (90 * rotationInverter));
+                quaternionToReach = face.rotatingParent.transform.rotation * Quaternion.Euler(0, 0, (90 * rotationInverter));
                 break;
         }
 

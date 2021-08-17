@@ -73,10 +73,10 @@ public class RubiksCube : MonoBehaviour
                 rightFace.Rotate(true);
                 break;
             case "L":
-                leftFace.Rotate();
+                leftFace.Rotate(true);
                 break;
             case "Li":
-                leftFace.Rotate(true);
+                leftFace.Rotate();
                 break;
             case "B":
                 rearFace.Rotate();
@@ -85,16 +85,16 @@ public class RubiksCube : MonoBehaviour
                 rearFace.Rotate(true);
                 break;
             case "D":
-                bottomFace.Rotate();
-                break;
-            case "Di":
                 bottomFace.Rotate(true);
                 break;
+            case "Di":
+                bottomFace.Rotate();
+                break;
             case "F":
-                frontFace.Rotate();
+                frontFace.Rotate(true);
                 break;
             case "Fi":
-                frontFace.Rotate(true);
+                frontFace.Rotate();
                 break;
             case "U":
                 upFace.Rotate();
