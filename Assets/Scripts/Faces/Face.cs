@@ -70,8 +70,6 @@ public class Face
 
         if (rotatingParent.transform.rotation == currentRotation.quaternionToReach)
         {
-            Debug.Log("a: " + rotatingParent.transform.rotation);
-            Debug.Log("b: " + currentRotation.quaternionToReach);
             currentRotation.finished = true;
         }
     }
