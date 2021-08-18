@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Face
 {
-    public static float rotatingSpeed = 100f;
+    public static float rotatingSpeed = 400f;
 
     public enum FaceType
     {
