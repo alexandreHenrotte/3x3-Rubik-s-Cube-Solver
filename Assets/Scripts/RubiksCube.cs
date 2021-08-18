@@ -5,48 +5,34 @@ using UnityEngine;
 
 public class RubiksCube : MonoBehaviour
 {
-    public Face frontFace;
-    public Face rearFace;
-    public Face leftFace;
-    public Face rightFace;
-    public Face bottomFace;
-    public Face upFace;
+    public Dictionary<Face.FaceType, Face> faces = new Dictionary<Face.FaceType, Face>();
 
     // Start is called before the first frame update
     void Start()
     {
-        // Create faces
-        /*
-        this.frontFace = new Face<FrontCube>(Object.FindObjectsOfType<FrontCube>(), GameObject.Find("front-center"));
-        this.rearFace = new Face<RearCube>(Object.FindObjectsOfType<RearCube>(), GameObject.Find("rear-center"));
-        this.leftFace = new Face<LeftCube>(Object.FindObjectsOfType<LeftCube>(), GameObject.Find("left-center"));
-        this.rightFace = new Face<RightCube>(Object.FindObjectsOfType<RightCube>(), GameObject.Find("right-center"));
-        this.bottomFace = new Face<BottomCube>(Object.FindObjectsOfType<BottomCube>(), GameObject.Find("bottom-center"));
-        this.upFace = new Face<UpCube>(Object.FindObjectsOfType<UpCube>(), GameObject.Find("up-center"));
-        */
+        // Setup center positions
+        //GameObject.Find("right-center").transform.position = GameObject.Find("right-center-cube").transform.position;
 
-        const float FACES_ROTATING_SPEED = 100f;
-
-        frontFace = new Face(Face.FaceType.FRONT, GameObject.Find("Front face collider").GetComponent<FaceUpdater>(), GameObject.Find("front-center"), Face.RotatingAxe.Z, FACES_ROTATING_SPEED);
-        rearFace = new Face(Face.FaceType.REAR, GameObject.Find("Rear face collider").GetComponent<FaceUpdater>(), GameObject.Find("rear-center"), Face.RotatingAxe.Z, FACES_ROTATING_SPEED);
-        leftFace = new Face(Face.FaceType.LEFT, GameObject.Find("Left face collider").GetComponent<FaceUpdater>(), GameObject.Find("left-center"), Face.RotatingAxe.X, FACES_ROTATING_SPEED);
-        rightFace = new Face(Face.FaceType.RIGHT, GameObject.Find("Right face collider").GetComponent<FaceUpdater>(), GameObject.Find("right-center"), Face.RotatingAxe.X, FACES_ROTATING_SPEED);
-        bottomFace = new Face(Face.FaceType.BOTTOM, GameObject.Find("Bottom face collider").GetComponent<FaceUpdater>(), GameObject.Find("bottom-center"), Face.RotatingAxe.Y, FACES_ROTATING_SPEED);
-        upFace = new Face(Face.FaceType.UP, GameObject.Find("Up face collider").GetComponent<FaceUpdater>(), GameObject.Find("up-center"), Face.RotatingAxe.Y, FACES_ROTATING_SPEED);
+        // Create logical faces
+        faces.Add(Face.FaceType.FRONT, new Face( GameObject.Find("Front face collider").GetComponent<FaceUpdater>(), GameObject.Find("front-center"), Face.RotatingAxe.Y));
+        faces.Add(Face.FaceType.REAR, new Face(GameObject.Find("Rear face collider").GetComponent<FaceUpdater>(), GameObject.Find("rear-center"), Face.RotatingAxe.Y));
+        faces.Add(Face.FaceType.LEFT, new Face(GameObject.Find("Left face collider").GetComponent<FaceUpdater>(), GameObject.Find("left-center"), Face.RotatingAxe.Z));
+        faces.Add(Face.FaceType.RIGHT, new Face(GameObject.Find("Right face collider").GetComponent<FaceUpdater>(), GameObject.Find("right-center"), Face.RotatingAxe.Z));
+        faces.Add(Face.FaceType.BOTTOM, new Face(GameObject.Find("Bottom face collider").GetComponent<FaceUpdater>(), GameObject.Find("bottom-center"), Face.RotatingAxe.X));
+        faces.Add(Face.FaceType.UP, new Face(GameObject.Find("Up face collider").GetComponent<FaceUpdater>(), GameObject.Find("up-center"), Face.RotatingAxe.X));
 }
 
     // Update is called once per frame
     void Update()
     {
-        frontFace.RotateIfNecessary();
-        rearFace.RotateIfNecessary();
-        leftFace.RotateIfNecessary();
-        rightFace.RotateIfNecessary();
-        bottomFace.RotateIfNecessary();
-        upFace.RotateIfNecessary();
+        foreach (Face face in faces.Values)
+        {
+            face.RotateIfNecessary();
+        }
     }
 
-    IEnumerator Rotations()
+    }
+
     {
         yield return new WaitForSeconds(3);
         Manipulate("R");
@@ -60,6 +46,18 @@ public class RubiksCube : MonoBehaviour
         Manipulate("B");
         yield return new WaitForSeconds(3);
         Manipulate("Bi");
+
+    public bool AllFacesAreStatic()
+    {
+        foreach (Face face in faces.Values)
+        {
+            if (!face.RotationFinished())
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public void Manipulate(string movement)
@@ -67,40 +65,40 @@ public class RubiksCube : MonoBehaviour
         switch (movement)
         {
             case "R":
-                rightFace.Rotate();
+                faces[Face.FaceType.RIGHT].Rotate(this, true);
                 break;
             case "Ri":
-                rightFace.Rotate(true);
+                faces[Face.FaceType.RIGHT].Rotate(this);
                 break;
             case "L":
-                leftFace.Rotate(true);
+                faces[Face.FaceType.LEFT].Rotate(this);
                 break;
             case "Li":
-                leftFace.Rotate();
+                faces[Face.FaceType.LEFT].Rotate(this, true);
                 break;
             case "B":
-                rearFace.Rotate();
+                faces[Face.FaceType.REAR].Rotate(this, true);
                 break;
             case "Bi":
-                rearFace.Rotate(true);
+                faces[Face.FaceType.REAR].Rotate(this);
                 break;
             case "D":
-                bottomFace.Rotate(true);
+                faces[Face.FaceType.BOTTOM].Rotate(this, true);
                 break;
             case "Di":
-                bottomFace.Rotate();
+                faces[Face.FaceType.BOTTOM].Rotate(this);
                 break;
             case "F":
-                frontFace.Rotate(true);
+                faces[Face.FaceType.FRONT].Rotate(this);
                 break;
             case "Fi":
-                frontFace.Rotate();
+                faces[Face.FaceType.FRONT].Rotate(this, true);
                 break;
             case "U":
-                upFace.Rotate();
+                faces[Face.FaceType.UP].Rotate(this);
                 break;
             case "Ui":
-                upFace.Rotate(true);
+                faces[Face.FaceType.UP].Rotate(this, true);
                 break;
         }
     }

@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class Face
 {
+    public static float rotatingSpeed = 100f;
+
     public enum FaceType
     {
         FRONT,
@@ -23,25 +25,21 @@ public class Face
     }
 
     public List<GameObject> cubes = new List<GameObject>();
-    public FaceType type;
     public GameObject rotatingParent;
     public RotatingAxe rotatingAxe;
-    float rotatingSpeed;
     Rotation currentRotation;
 
-    public Face(FaceType type, FaceUpdater faceUpdater, GameObject rotatingParent, RotatingAxe rotatingAxe, float rotatingSpeed = 100f)
+    public Face(FaceUpdater faceUpdater, GameObject rotatingParent, RotatingAxe rotatingAxe)
     {
-        this.type = type;
         this.rotatingParent = rotatingParent;
         this.rotatingAxe = rotatingAxe;
-        this.rotatingSpeed = rotatingSpeed;
 
         faceUpdater.Init(this);
     }
 
-    public void Rotate(bool inversed=false)
+    public void Rotate(RubiksCube rubiksCube, bool inversed=false)
     {
-        if (currentRotation == null || currentRotation.finished)
+        if (rubiksCube.AllFacesAreStatic())
         {
             this.currentRotation = new Rotation(this, inversed);
         }  
@@ -49,7 +47,7 @@ public class Face
 
     public void RotateIfNecessary()
     {
-        if (currentRotation == null || currentRotation.finished)
+        if (RotationFinished())
         {
             return;
         }
@@ -72,7 +70,14 @@ public class Face
 
         if (rotatingParent.transform.rotation == currentRotation.quaternionToReach)
         {
+            Debug.Log("a: " + rotatingParent.transform.rotation);
+            Debug.Log("b: " + currentRotation.quaternionToReach);
             currentRotation.finished = true;
         }
+    }
+
+    public bool RotationFinished()
+    {
+        return currentRotation == null || currentRotation.finished;
     }
 }

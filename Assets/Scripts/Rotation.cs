@@ -31,7 +31,5 @@ public class Rotation
                 quaternionToReach = face.rotatingParent.transform.rotation * Quaternion.Euler(0, 0, (90 * rotationInverter));
                 break;
         }
-
-        Debug.Log(quaternionToReach);
     }
 }
