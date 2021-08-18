@@ -31,21 +31,27 @@ public class RubiksCube : MonoBehaviour
         }
     }
 
+    public void Shuffle()
+    {
+        StartCoroutine(ShuffleAction());
     }
 
+    public IEnumerator ShuffleAction()
     {
-        yield return new WaitForSeconds(3);
-        Manipulate("R");
-        yield return new WaitForSeconds(3);
-        Manipulate("Ri");
-        yield return new WaitForSeconds(3);
-        Manipulate("L");
-        yield return new WaitForSeconds(3);
-        Manipulate("Li");
-        yield return new WaitForSeconds(3);
-        Manipulate("B");
-        yield return new WaitForSeconds(3);
-        Manipulate("Bi");
+        const int NB_RANDOM_MOVEMENTS = 25;
+        float oldSpeed = Face.rotatingSpeed;
+
+        Face.rotatingSpeed = 600f; // !!! If the rotatingSpeed is too high, cubes can move in bad positions (overlaping cubes) --> TODO
+        string[] possibleMovements = { "R", "Ri", "L", "Li", "B", "Bi", "D", "Di", "F", "Fi", "U", "Ui" };
+        for (int i = 0; i < NB_RANDOM_MOVEMENTS; i++)
+        {
+            int randomMovementIndex = new System.Random().Next(possibleMovements.Length);
+            string randomMovement = possibleMovements[randomMovementIndex];
+            Manipulate(randomMovement);
+            yield return new WaitUntil(() => AllFacesAreStatic());
+        }
+        Face.rotatingSpeed = oldSpeed;
+    }
 
     public bool AllFacesAreStatic()
     {
