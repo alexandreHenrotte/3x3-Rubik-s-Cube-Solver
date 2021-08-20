@@ -1,6 +1,15 @@
 name: Build and Deploy
+
+# Automatic action trigger on master push
 on:
-  workflow_dispatch: {}
+  push:
+    branches:
+      - master
+
+# Manual action trigger
+#on:
+  #workflow_dispatch: {}
+  
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
