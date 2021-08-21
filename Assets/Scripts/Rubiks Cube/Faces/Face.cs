@@ -24,7 +24,8 @@ public class Face
         Z
     }
 
-    public List<GameObject> cubes = new List<GameObject>();
+    public Row[] rows = { new Row(), new Row(), new Row()};
+    public Column[] columns = { new Column(), new Column(), new Column() };
     public GameObject rotatingParent;
     public RotatingAxe rotatingAxe;
     Rotation currentRotation;
@@ -58,9 +59,21 @@ public class Face
 
     void SetParent()
     {
-        foreach (GameObject cube in cubes)
+        // Rows
+        foreach (Row row in rows)
         {
-            cube.transform.SetParent(rotatingParent.transform);
+            foreach (GameObject cube in row.cubes)
+            {
+                cube.transform.SetParent(rotatingParent.transform);
+            }
+        }
+        // Columns
+        foreach (Column column in columns)
+        {
+            foreach (GameObject cube in column.cubes)
+            {
+                cube.transform.SetParent(rotatingParent.transform);
+            }
         }
     }
 
