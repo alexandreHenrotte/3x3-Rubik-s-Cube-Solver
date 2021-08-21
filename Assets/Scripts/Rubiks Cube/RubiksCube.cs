@@ -11,9 +11,6 @@ public class RubiksCube : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // Setup center positions
-        //GameObject.Find("right-center").transform.position = GameObject.Find("right-center-cube").transform.position;
-
         // Create logical faces
         faces.Add(Face.FaceType.FRONT, new Face(GameObject.Find("Front face collider").GetComponent<FaceUpdater>(), GameObject.Find("front-center"), Face.RotatingAxe.Y));
         faces.Add(Face.FaceType.REAR, new Face(GameObject.Find("Rear face collider").GetComponent<FaceUpdater>(), GameObject.Find("rear-center"), Face.RotatingAxe.Y));
