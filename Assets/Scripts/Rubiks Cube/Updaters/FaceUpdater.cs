@@ -1,11 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class FaceUpdater : MonoBehaviour
 {
-    public Face.FaceType selectedfaceType = new Face.FaceType();
+    public Face.FaceType faceType = new Face.FaceType();
     Face face;
     private RowUpdater[] rowUpdaters = new RowUpdater[3];
     private ColumnUpdater[] columnUpdaters = new ColumnUpdater[3];
@@ -49,6 +50,8 @@ public class FaceUpdater : MonoBehaviour
 
     public void Init(Face face)
     {
+        this.face = face;
+
         foreach(RowUpdater rowUpdater in rowUpdaters)
         {
             rowUpdater.Init(face);

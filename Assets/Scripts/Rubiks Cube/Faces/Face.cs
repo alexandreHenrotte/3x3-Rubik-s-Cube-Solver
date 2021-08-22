@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Face
@@ -15,6 +16,16 @@ public class Face
         RIGHT,
         BOTTOM,
         UP
+    }
+
+    public enum Color
+    {
+        RED,
+        ORANGE,
+        GREEN,
+        BLUE,
+        YELLOW,
+        WHITE
     }
 
     public enum RotatingAxe
@@ -90,5 +101,36 @@ public class Face
     public bool RotationFinished()
     {
         return currentRotation == null || currentRotation.finished;
+    }
+
+    public List<GameObject> GetCubes()
+    {
+        List<GameObject> cubes = new List<GameObject>();
+
+        // Row
+        foreach(Row row in rows)
+        {
+            foreach(GameObject cube in row.cubes)
+            {
+                if (!cubes.Contains(cube))
+                {
+                    cubes.Add(cube);
+                }
+            }
+        }
+
+        // Column
+        foreach (Column column in columns)
+        {
+            foreach (GameObject cube in column.cubes)
+            {
+                if (!cubes.Contains(cube))
+                {
+                    cubes.Add(cube);
+                }
+            }
+        }
+
+        return cubes;
     }
 }

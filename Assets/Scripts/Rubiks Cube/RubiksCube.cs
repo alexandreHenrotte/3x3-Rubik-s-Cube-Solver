@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class RubiksCube : MonoBehaviour
@@ -41,67 +42,69 @@ public class RubiksCube : MonoBehaviour
 
     public void Manipulate(string movement)
     {
+        Face.FaceType faceType = new Face.FaceType();
+        bool inverted = false;
+
         switch (movement)
         {
             case "R":
-                faces[Face.FaceType.RIGHT].Rotate(this, true);
+                faceType = Face.FaceType.RIGHT;
+                inverted = true;
                 break;
             case "Ri":
-                faces[Face.FaceType.RIGHT].Rotate(this);
+                faceType = Face.FaceType.RIGHT;
+                inverted = false;
                 break;
             case "L":
-                faces[Face.FaceType.LEFT].Rotate(this);
+                faceType = Face.FaceType.LEFT;
+                inverted = false;
                 break;
             case "Li":
-                faces[Face.FaceType.LEFT].Rotate(this, true);
+                faceType = Face.FaceType.LEFT;
+                inverted = true;
                 break;
             case "B":
-                faces[Face.FaceType.REAR].Rotate(this, true);
+                faceType = Face.FaceType.REAR;
+                inverted = true;
                 break;
             case "Bi":
-                faces[Face.FaceType.REAR].Rotate(this);
+                faceType = Face.FaceType.REAR;
+                inverted = false;
                 break;
             case "D":
-                faces[Face.FaceType.BOTTOM].Rotate(this, true);
+                faceType = Face.FaceType.BOTTOM;
+                inverted = true;
                 break;
             case "Di":
-                faces[Face.FaceType.BOTTOM].Rotate(this);
+                faceType = Face.FaceType.BOTTOM;
+                inverted = false;
                 break;
             case "F":
-                faces[Face.FaceType.FRONT].Rotate(this);
+                faceType = Face.FaceType.FRONT;
+                inverted = false;
                 break;
             case "Fi":
-                faces[Face.FaceType.FRONT].Rotate(this, true);
+                faceType = Face.FaceType.FRONT;
+                inverted = true;
                 break;
             case "U":
-                faces[Face.FaceType.UP].Rotate(this);
+                faceType = Face.FaceType.UP;
+                inverted = false;
                 break;
             case "Ui":
-                faces[Face.FaceType.UP].Rotate(this, true);
+                faceType = Face.FaceType.UP;
+                inverted = true;
                 break;
         }
+
+        Face faceToManipulate = faces[faceType];
+        faceToManipulate.Rotate(this, inverted);
+        StartCoroutine(ColorMappingUpdater.Update(faceToManipulate, movement));
     }
 
     public void Shuffle()
     {
-        StartCoroutine(ShuffleAction());
-    }
-
-    public IEnumerator ShuffleAction()
-    {
-        const int NB_RANDOM_MOVEMENTS = 25;
-        float oldSpeed = Face.rotatingSpeed;
-
-        Face.rotatingSpeed = 600f; // !!! If the rotatingSpeed is too high, cubes can move in bad positions (overlaping cubes) --> TODO
-        string[] possibleMovements = { "R", "Ri", "L", "Li", "B", "Bi", "D", "Di", "F", "Fi", "U", "Ui" };
-        for (int i = 0; i < NB_RANDOM_MOVEMENTS; i++)
-        {
-            int randomMovementIndex = new System.Random().Next(possibleMovements.Length);
-            string randomMovement = possibleMovements[randomMovementIndex];
-            Manipulate(randomMovement);
-            yield return new WaitUntil(() => AllFacesAreStatic());
-        }
-        Face.rotatingSpeed = oldSpeed;
+        StartCoroutine(ShuffleMechanism.Shuffle(this));
     }
 
     public bool AllFacesAreStatic()
