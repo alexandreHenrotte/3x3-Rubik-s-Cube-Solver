@@ -11,7 +11,7 @@ public static class ColorMappingUpdater
     public static IEnumerator Update(Face faceManipulated, string movement)
     {
         yield return new WaitUntil(() => faceManipulated.RotationFinished());
-        foreach (GameObject cube in faceManipulated.GetCubes())
+        foreach (GameObject cube in faceManipulated.GetAllCubes())
         {
             for (int i = 0; i < cube.GetComponent<Cube>().colorFaceAssociations.Count; i++)
             {

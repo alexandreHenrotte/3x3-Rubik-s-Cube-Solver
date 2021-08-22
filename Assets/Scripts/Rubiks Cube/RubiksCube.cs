@@ -33,10 +33,7 @@ public class RubiksCube : MonoBehaviour
     public GameObject GetCube(Face.FaceType faceType, int rowNumber, int columnNumber)
     {
         Face face = faces[faceType];
-        Row row = face.rows[rowNumber - 1];
-        Column column = face.columns[columnNumber - 1];
-
-        GameObject cube = row.cubes.Intersect(column.cubes).ToArray()[0];
+        GameObject cube = face.GetCube(rowNumber, columnNumber);
         return cube;
     }
 

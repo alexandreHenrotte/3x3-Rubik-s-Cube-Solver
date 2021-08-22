@@ -103,7 +103,15 @@ public class Face
         return currentRotation == null || currentRotation.finished;
     }
 
-    public List<GameObject> GetCubes()
+    public GameObject GetCube(int rowNumber, int columnNumber)
+    {
+        Row row = rows[rowNumber - 1];
+        Column column = columns[columnNumber - 1];
+        GameObject cube = row.cubes.Intersect(column.cubes).ToArray()[0];
+        return cube;
+    }
+
+    public List<GameObject> GetAllCubes()
     {
         List<GameObject> cubes = new List<GameObject>();
 
