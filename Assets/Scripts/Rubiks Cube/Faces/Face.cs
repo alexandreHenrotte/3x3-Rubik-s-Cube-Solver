@@ -37,23 +37,27 @@ public class Face
 
     public Row[] rows = { new Row(), new Row(), new Row()};
     public Column[] columns = { new Column(), new Column(), new Column() };
+    public FaceUpdater faceUpdater;
     public GameObject rotatingParent;
     public RotatingAxe rotatingAxe;
+    public bool rotatingInverted;
     Rotation currentRotation;
 
-    public Face(FaceUpdater faceUpdater, GameObject rotatingParent, RotatingAxe rotatingAxe)
+    public Face(FaceUpdater faceUpdater, GameObject rotatingParent, RotatingAxe rotatingAxe, bool rotatingInverted)
     {
+        this.faceUpdater = faceUpdater;
         this.rotatingParent = rotatingParent;
         this.rotatingAxe = rotatingAxe;
+        this.rotatingInverted = rotatingInverted;
 
         faceUpdater.Init(this);
     }
 
-    public void Rotate(RubiksCube rubiksCube, bool inversed=false)
+    public void Rotate(RubiksCube rubiksCube, bool inverted=false)
     {
         if (rubiksCube.AllFacesAreStatic())
         {
-            this.currentRotation = new Rotation(this, inversed);
+            this.currentRotation = new Rotation(this, inverted);
         }  
     }
 
