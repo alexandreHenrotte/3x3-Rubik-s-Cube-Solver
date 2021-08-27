@@ -30,6 +30,7 @@ public class RubiksCube : MonoBehaviour
             face.RotateIfNecessary();
         }
     }
+
     public Face.Color GetCubeColor(Face.FaceType faceType, int rowNumber, int columnNumber)
     {
         Cube cube = GetCube(faceType, rowNumber, columnNumber).GetComponent<Cube>();
@@ -37,71 +38,55 @@ public class RubiksCube : MonoBehaviour
         return color;
     }
 
-    public GameObject GetCube(Face.FaceType faceType, int rowNumber, int columnNumber)
+    public Cube GetCube(Face.FaceType faceType, int rowNumber, int columnNumber)
     {
         Face face = faces[faceType];
-        GameObject cube = face.GetCube(rowNumber, columnNumber);
+        Cube cube = face.GetCube(rowNumber, columnNumber);
         return cube;
     }
 
-    public void Manipulate(string movement)
+    public void Manipulate(string movementCall)
     {
-        Face.FaceType faceType = new Face.FaceType();
-        bool inverted = movement.Contains("i");
-
-        switch (movement)
+        if (AllFacesAreStatic())
         {
-            case "R":
-                faceType = Face.FaceType.RIGHT;
-                break;
-            case "Ri":
-                faceType = Face.FaceType.RIGHT;
-                break;
-            case "L":
-                faceType = Face.FaceType.LEFT;
-                break;
-            case "Li":
-                faceType = Face.FaceType.LEFT;
-                break;
-            case "B":
-                faceType = Face.FaceType.REAR;
-                break;
-            case "Bi":
-                faceType = Face.FaceType.REAR;
-                break;
-            case "D":
-                faceType = Face.FaceType.BOTTOM;
-                break;
-            case "Di":
-                faceType = Face.FaceType.BOTTOM;
-                break;
-            case "F":
-                faceType = Face.FaceType.FRONT;
-                break;
-            case "Fi":
-                faceType = Face.FaceType.FRONT;
-                break;
-            case "U":
-                faceType = Face.FaceType.UP;
-                break;
-            case "Ui":
-                faceType = Face.FaceType.UP;
-                break;
+            Movement movement = Movement.Translate(movementCall);
+            Face faceToManipulate = faces[movement.faceType];
+            faceToManipulate.Rotate(this, movement.isInverted);
+            StartCoroutine(ColorMappingUpdater.Update(faceToManipulate, movement));
         }
+    }
 
-        Face faceToManipulate = faces[faceType];
-        faceToManipulate.Rotate(this, inverted);
-        StartCoroutine(ColorMappingUpdater.Update(faceToManipulate, movement));
+    public void Manipulate(string[] movementCalls)
+    {
+        if (AllFacesAreStatic())
+        {
+            StartCoroutine(ManipulateMany(movementCalls));
+        }
+    }
+
+    IEnumerator ManipulateMany(string[] movementCalls)
+    {
+        foreach (string movementCall in movementCalls)
+        {
+            Manipulate(movementCall);
+            yield return new WaitUntil(() => AllFacesAreStatic());
+        }
     }
 
     public void Solve()
     {
-        SolveRubiksCube.Start(this);
+        if (AllFacesAreStatic())
+        {
+            WhiteCross.Make(this);
+        }
     }
 
     public void Shuffle()
     {
-        StartCoroutine(ShuffleMechanism.Shuffle(this));
+        if (AllFacesAreStatic())
+        {
+            StartCoroutine(ShuffleMechanism.Shuffle(this));
+        }
     }
 
     public bool AllFacesAreStatic()
@@ -113,7 +98,6 @@ public class RubiksCube : MonoBehaviour
                 return false;
             }
         }
-
         return true;
     }
 
@@ -152,5 +136,18 @@ public class RubiksCube : MonoBehaviour
             // Set new faces
             faces = newFaces;
         }
+    }
+
+    public void ResetFacePositionning()
+    {
+        Dictionary<Face.FaceType, Face> newFaces = new Dictionary<Face.FaceType, Face>();
+        newFaces.Add(Face.FaceType.FRONT, faces.Single(f => f.Value.rotatingParent.name.Contains("front")).Value);
+        newFaces.Add(Face.FaceType.REAR, faces.Single(f => f.Value.rotatingParent.name.Contains("rear")).Value);
+        newFaces.Add(Face.FaceType.LEFT, faces.Single(f => f.Value.rotatingParent.name.Contains("left")).Value);
+        newFaces.Add(Face.FaceType.RIGHT, faces.Single(f => f.Value.rotatingParent.name.Contains("right")).Value);
+        newFaces.Add(Face.FaceType.BOTTOM, faces.Single(f => f.Value.rotatingParent.name.Contains("bottom")).Value);
+        newFaces.Add(Face.FaceType.UP, faces.Single(f => f.Value.rotatingParent.name.Contains("up")).Value);
+
+        faces = newFaces;
     }
 }

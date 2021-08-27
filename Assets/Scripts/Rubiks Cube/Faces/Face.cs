@@ -55,10 +55,7 @@ public class Face
 
     public void Rotate(RubiksCube rubiksCube, bool inverted=false)
     {
-        if (rubiksCube.AllFacesAreStatic())
-        {
-            this.currentRotation = new Rotation(this, inverted);
-        }  
+        this.currentRotation = new Rotation(this, inverted);
     }
 
     public void RotateIfNecessary()
@@ -107,12 +104,12 @@ public class Face
         return currentRotation == null || currentRotation.finished;
     }
 
-    public GameObject GetCube(int rowNumber, int columnNumber)
+    public Cube GetCube(int rowNumber, int columnNumber)
     {
         Row row = rows[rowNumber - 1];
         Column column = columns[columnNumber - 1];
         GameObject cube = row.cubes.Intersect(column.cubes).ToArray()[0];
-        return cube;
+        return cube.GetComponent<Cube>();
     }
 
     public List<GameObject> GetAllCubes()

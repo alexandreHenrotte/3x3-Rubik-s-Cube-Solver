@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,6 +6,7 @@ using UnityEngine;
 public static class WhiteCross
 {
     static RubiksCube rubiksCube;
+    static List<string> movementCallsToDo = new List<string>();
 
     public static void Make(RubiksCube rubiksCube)
     {
@@ -12,17 +14,19 @@ public static class WhiteCross
         WhiteCross.rubiksCube = rubiksCube;
 
         // Do algorithm
-        while (!WhiteCrossDone())
+        foreach (Face.FaceType faceType in rubiksCube.faces.Keys)
         {
-            foreach (Face.FaceType faceType in rubiksCube.faces.Keys)
+            if (faceType != Face.FaceType.BOTTOM && faceType != Face.FaceType.UP)
             {
-                // Loop on every face except the UP face (white)
-                if (faceType != Face.FaceType.UP)
-                {
-                    ManipulateWhitePlatesOnRow(faceType);
-                    //SearchForCenteredWhitePlatesOnColumn(faceType);
-                }
+                ManipulateWhitePlatesOnRow(faceType);
+                //ManipulateWhitePlatesOnColumn(faceType);
+                //SearchForCenteredWhitePlatesOnColumn(faceType);
             }
+        }
+
+        rubiksCube.Manipulate(movementCallsToDo.ToArray());
+        movementCallsToDo.Clear();
+
 
             // Find a middle white plate of row (only row 1 and 3) OR middle white plate of column
 
@@ -43,9 +47,6 @@ public static class WhiteCross
             // --> L'
             // b. if is on right
             // --> R
-
-
-        }
         // Place white plate under his desired position
     }
 
@@ -53,39 +54,31 @@ public static class WhiteCross
     {
         for (int i_row = 1; i_row <= 3; i_row += 2) // we don't want to search on second row
         {
-            Cube cube = rubiksCube.GetCube(faceType, i_row, 2).GetComponent<Cube>();
+            Cube cube = rubiksCube.GetCube(faceType, i_row, 2);
             Face.Color color = cube.GetColor(faceType);
 
             if (color == Face.Color.WHITE && i_row == 1)
             {
-                ManipulateCubeOnRowOne(faceType);
+                rubiksCube.ChangeRelativeFacePositionning(faceType);
+
+                movementCallsToDo.Add("Fi");
+                MakeFaceFreeToRotate(faceType);
+                movementCallsToDo.Add("Li");
+
+                rubiksCube.ResetFacePositionning();
             }
 
             else if (color == Face.Color.WHITE && i_row == 3)
             {
-                ManipulateCubeOnRowThree(faceType);
+                rubiksCube.ChangeRelativeFacePositionning(faceType);
+
+                movementCallsToDo.Add("F");
+                MakeFaceFreeToRotate(faceType);
+                movementCallsToDo.Add("R");
+
+                rubiksCube.ResetFacePositionning();
             }
         }
-    }
-
-    static void ManipulateCubeOnRowOne(Face.FaceType faceType)
-    {
-        rubiksCube.Manipulate("Fi");
-        while (rubiksCube.GetCube(faceType, 1, 2).GetComponent<Cube>().GetColor(Face.FaceType.UP) == Face.Color.WHITE)
-        {
-            rubiksCube.Manipulate("U");
-        }
-        rubiksCube.Manipulate("Li");
-    }
-
-    static void ManipulateCubeOnRowThree(Face.FaceType faceType)
-    {
-        rubiksCube.Manipulate("F");
-        while (rubiksCube.GetCube(faceType, 1, 2).GetComponent<Cube>().GetColor(Face.FaceType.UP) == Face.Color.WHITE)
-        {
-            rubiksCube.Manipulate("U");
-        }
-        rubiksCube.Manipulate("R");
     }
 
     /*
@@ -102,6 +95,35 @@ public static class WhiteCross
         }
     }
     */
+
+    static void MakeFaceFreeToRotate(Face.FaceType faceTypeToMove)
+    {
+        Face.FaceType[] relativeFaceTypes = { Face.FaceType.LEFT, Face.FaceType.REAR, Face.FaceType.RIGHT, Face.FaceType.FRONT }; // UP and BOTTOM are not relatives
+
+        // Find number of rotations needed
+        int numberOfNeededRotations = 0;
+        int indexOfFaceTypeToMove = Array.IndexOf(relativeFaceTypes, faceTypeToMove);
+        for (int i = indexOfFaceTypeToMove; i < relativeFaceTypes.Length + indexOfFaceTypeToMove; i++)
+        {
+            Face.FaceType i_faceType = relativeFaceTypes[i % relativeFaceTypes.Length];
+            bool upCubeIsWhite = rubiksCube.faces[i_faceType].GetCube(1, 2).GetColor(Face.FaceType.UP) == Face.Color.WHITE;
+            if (!upCubeIsWhite)
+            {
+                numberOfNeededRotations = i;
+                break;
+            }
+        }
+
+        if (numberOfNeededRotations > 0)
+        {
+            // Create list of rotation movements
+            string rotationMovementCall = "U";
+            for (int i = 0; i < numberOfNeededRotations; i++)
+            {
+                movementCallsToDo.Add(rotationMovementCall);
+            }
+        }
+    }
 
     static bool WhiteCrossDone()
     {
