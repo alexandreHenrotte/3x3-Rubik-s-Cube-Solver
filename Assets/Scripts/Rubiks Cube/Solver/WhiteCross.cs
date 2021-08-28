@@ -1,11 +1,12 @@
 using System;
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 
 public static class WhiteCross
 {
     static RubiksCube rubiksCube;
-    static bool faceFreeToRotate = false;
+    static bool faceFreeToRotate;
 
     public static IEnumerator Make(RubiksCube rubiksCube)
     {
@@ -19,8 +20,8 @@ public static class WhiteCross
             {
                 rubiksCube.StartCoroutine(ManipulateWhitePlatesOnRow(faceType));
                 yield return new WaitUntil(() => rubiksCube.readyToManipulate);
-                //ManipulateWhitePlatesOnColumn(faceType);
-                //SearchForCenteredWhitePlatesOnColumn(faceType);
+                rubiksCube.StartCoroutine(ManipulateWhitePlatesOnColumn(faceType));
+                yield return new WaitUntil(() => rubiksCube.readyToManipulate);
             }
         }
 
@@ -56,86 +57,105 @@ public static class WhiteCross
 
             if (color == Face.Color.WHITE && i_row == 1)
             {
-                //rubiksCube.ChangeRelativeFacePositionning(faceType);
-
-                rubiksCube.Manipulate("Fi", Face.FaceType.RIGHT);
-                yield return new WaitUntil(() => rubiksCube.readyToManipulate);
-                /*rubiksCube.StartCoroutine(MakeFaceFreeToRotate(faceType));
-                yield return new WaitUntil(() => faceFreeToRotate);
-                rubiksCube.Manipulate("Li");
-                yield return new WaitUntil(() => rubiksCube.readyToManipulate);*/
-
-                //rubiksCube.ResetFacePositionning();
-            }
-
-            /*else if (color == Face.Color.WHITE && i_row == 3)
-            {
-                rubiksCube.ChangeRelativeFacePositionning(faceType);
-
-                rubiksCube.Manipulate("F");
-                yield return new WaitUntil(() => rubiksCube.readyToManipulate);
                 rubiksCube.StartCoroutine(MakeFaceFreeToRotate(faceType));
                 yield return new WaitUntil(() => faceFreeToRotate);
-                rubiksCube.Manipulate("R");
+                rubiksCube.Manipulate("Fi", faceType);
                 yield return new WaitUntil(() => rubiksCube.readyToManipulate);
+                rubiksCube.StartCoroutine(MakeFaceFreeToRotate(GetLeftFaceType(faceType)));
+                yield return new WaitUntil(() => faceFreeToRotate);
+                rubiksCube.Manipulate("Li", faceType);
+                yield return new WaitUntil(() => rubiksCube.readyToManipulate);
+            }
 
-                rubiksCube.ResetFacePositionning();
-            }*/
+            else if (color == Face.Color.WHITE && i_row == 3)
+            {
+                rubiksCube.StartCoroutine(MakeFaceFreeToRotate(faceType));
+                yield return new WaitUntil(() => faceFreeToRotate);
+                rubiksCube.Manipulate("F", faceType);
+                yield return new WaitUntil(() => rubiksCube.readyToManipulate);
+                rubiksCube.StartCoroutine(MakeFaceFreeToRotate(GetRightFaceType(faceType)));
+                yield return new WaitUntil(() => faceFreeToRotate);
+                rubiksCube.Manipulate("R", faceType);
+                yield return new WaitUntil(() => rubiksCube.readyToManipulate);
+            }
         }
     }
-
-    /*
-    static void SearchForCenteredWhitePlatesOnColumn(RubiksCube rubiksCube, Face.FaceType faceType)
+    static IEnumerator ManipulateWhitePlatesOnColumn(Face.FaceType faceType)
     {
         for (int i_column = 1; i_column <= 3; i_column += 2) // we don't want to search on second column
         {
             Cube cube = rubiksCube.GetCube(faceType, 2, i_column).GetComponent<Cube>();
             Face.Color color = cube.GetColor(faceType);
-            if (color == Face.Color.WHITE)
+
+            if (color == Face.Color.WHITE && i_column == 1)
             {
-                // ALGORITHM TO DO
+                rubiksCube.StartCoroutine(MakeFaceFreeToRotate(GetLeftFaceType(faceType)));
+                yield return new WaitUntil(() => faceFreeToRotate);
+                rubiksCube.Manipulate("Li", faceType);
+                yield return new WaitUntil(() => rubiksCube.readyToManipulate);
+            }
+            else if (color == Face.Color.WHITE && i_column == 3)
+            {
+                rubiksCube.StartCoroutine(MakeFaceFreeToRotate(GetRightFaceType(faceType)));
+                yield return new WaitUntil(() => faceFreeToRotate);
+                rubiksCube.Manipulate("R", faceType);
+                yield return new WaitUntil(() => rubiksCube.readyToManipulate);
             }
         }
     }
-    */
 
-    static IEnumerator MakeFaceFreeToRotate(Face.FaceType faceTypeToMove)
+    static IEnumerator MakeFaceFreeToRotate(Face.FaceType faceTypeToMakeFree)
     {
-        Face.FaceType[] relativeFaceTypes = { Face.FaceType.LEFT, Face.FaceType.REAR, Face.FaceType.RIGHT, Face.FaceType.FRONT }; // UP and BOTTOM are not relatives
+        faceFreeToRotate = false;
 
-        // Find number of rotations needed
-        int numberOfNeededRotations = 0;
-        int indexOfFaceTypeToMove = Array.IndexOf(relativeFaceTypes, faceTypeToMove) + 1;
-        for (int i = indexOfFaceTypeToMove; i < relativeFaceTypes.Length + indexOfFaceTypeToMove; i++)
+        while (rubiksCube.GetCube(faceTypeToMakeFree, 1, 2).GetColor(Face.FaceType.UP) == Face.Color.WHITE)
         {
-            Face.FaceType i_faceType = relativeFaceTypes[i % relativeFaceTypes.Length];
-            bool upCubeIsWhite = rubiksCube.faces[i_faceType].GetCube(1, 2).GetColor(Face.FaceType.UP) == Face.Color.WHITE;
-            if (!upCubeIsWhite)
-            {
-                numberOfNeededRotations = i;
-                break;
-            }
-        }
-
-        if (numberOfNeededRotations > 0)
-        {
-            // Create list of rotation movements
-            string rotationMovementCall = "U";
-            for (int i = 0; i < numberOfNeededRotations; i++)
-            {
-                rubiksCube.Manipulate(rotationMovementCall);
-                yield return new WaitUntil(() => rubiksCube.readyToManipulate);
-            }
+            rubiksCube.Manipulate("U");
+            yield return new WaitUntil(() => rubiksCube.readyToManipulate);
         }
 
         faceFreeToRotate = true;
     }
 
+    static Face.FaceType GetLeftFaceType(Face.FaceType faceType)
+    {
+        switch (faceType)
+        {
+            case Face.FaceType.FRONT:
+                return Face.FaceType.LEFT;
+            case Face.FaceType.LEFT:
+                return Face.FaceType.REAR;
+            case Face.FaceType.REAR:
+                return Face.FaceType.RIGHT;
+            case Face.FaceType.RIGHT:
+                return Face.FaceType.FRONT;
+            default:
+                throw new Exception($"{faceType} is not a valid horizontal face type");
+        }
+    }
+
+    static Face.FaceType GetRightFaceType(Face.FaceType faceType)
+    {
+        switch (faceType)
+        {
+            case Face.FaceType.FRONT:
+                return Face.FaceType.RIGHT;
+            case Face.FaceType.LEFT:
+                return Face.FaceType.FRONT;
+            case Face.FaceType.REAR:
+                return Face.FaceType.LEFT;
+            case Face.FaceType.RIGHT:
+                return Face.FaceType.REAR;
+            default:
+                throw new Exception($"{faceType} is not a valid horizontal face type");
+        }
+    }
+
     static bool WhiteCrossDone()
     {
-        return rubiksCube.GetCubeColor(Face.FaceType.UP, 1, 2) == Face.Color.WHITE &&
-               rubiksCube.GetCubeColor(Face.FaceType.UP, 2, 1) == Face.Color.WHITE &&
-               rubiksCube.GetCubeColor(Face.FaceType.UP, 2, 3) == Face.Color.WHITE &&
-               rubiksCube.GetCubeColor(Face.FaceType.UP, 3, 2) == Face.Color.WHITE;
+        return rubiksCube.GetCube(Face.FaceType.BOTTOM, 1, 2).GetColor(Face.FaceType.BOTTOM) == Face.Color.WHITE &&
+               rubiksCube.GetCube(Face.FaceType.BOTTOM, 2, 1).GetColor(Face.FaceType.BOTTOM) == Face.Color.WHITE &&
+               rubiksCube.GetCube(Face.FaceType.BOTTOM, 2, 3).GetColor(Face.FaceType.BOTTOM) == Face.Color.WHITE &&
+               rubiksCube.GetCube(Face.FaceType.BOTTOM, 3, 2).GetColor(Face.FaceType.BOTTOM) == Face.Color.WHITE;
     }
 }

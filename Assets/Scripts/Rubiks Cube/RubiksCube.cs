@@ -29,13 +29,6 @@ public class RubiksCube : MonoBehaviour
         }
     }
 
-    public Face.Color GetCubeColor(Face.FaceType faceType, int rowNumber, int columnNumber)
-    {
-        Cube cube = GetCube(faceType, rowNumber, columnNumber).GetComponent<Cube>();
-        Face.Color color = cube.GetColor(faceType);
-        return color;
-    }
-
     public Cube GetCube(Face.FaceType faceType, int rowNumber, int columnNumber)
     {
         Face face = faces[faceType];
@@ -64,19 +57,19 @@ public class RubiksCube : MonoBehaviour
         }
     }
 
-    public void Manipulate(string[] movementCalls)
+    public void ManipulateMany(string[] movementCalls, Face.FaceType relativeFrontFace = Face.FaceType.FRONT)
     {
         if (readyToManipulate)
         {
-            StartCoroutine(ManipulateMany(movementCalls));
+            StartCoroutine(ManipulateManyRoutine(movementCalls, relativeFrontFace));
         }
     }
 
-    IEnumerator ManipulateMany(string[] movementCalls)
+    IEnumerator ManipulateManyRoutine(string[] movementCalls, Face.FaceType relativeFrontFace)
     {
         foreach (string movementCall in movementCalls)
         {
-            Manipulate(movementCall);
+            Manipulate(movementCall, relativeFrontFace);
             yield return new WaitUntil(() => readyToManipulate);
         }
     }
