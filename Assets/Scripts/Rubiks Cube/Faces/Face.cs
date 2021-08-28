@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -35,7 +33,7 @@ public class Face
         Z
     }
 
-    public Row[] rows = { new Row(), new Row(), new Row()};
+    public Row[] rows = { new Row(), new Row(), new Row() };
     public Column[] columns = { new Column(), new Column(), new Column() };
     public FaceUpdater faceUpdater;
     public GameObject rotatingParent;
@@ -53,7 +51,7 @@ public class Face
         faceUpdater.Init(this);
     }
 
-    public void Rotate(RubiksCube rubiksCube, bool inverted=false)
+    public void Rotate(RubiksCube rubiksCube, bool inverted = false)
     {
         this.currentRotation = new Rotation(this, inverted);
     }
@@ -117,9 +115,9 @@ public class Face
         List<GameObject> cubes = new List<GameObject>();
 
         // Row
-        foreach(Row row in rows)
+        foreach (Row row in rows)
         {
-            foreach(GameObject cube in row.cubes)
+            foreach (GameObject cube in row.cubes)
             {
                 if (!cubes.Contains(cube))
                 {

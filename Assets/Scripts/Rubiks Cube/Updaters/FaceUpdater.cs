@@ -1,7 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class FaceUpdater : MonoBehaviour
@@ -48,12 +44,12 @@ public class FaceUpdater : MonoBehaviour
 
     public void Init(Face face)
     {
-        foreach(RowUpdater rowUpdater in rowUpdaters)
+        foreach (RowUpdater rowUpdater in rowUpdaters)
         {
             rowUpdater.Init(face);
         }
 
-        foreach(ColumnUpdater columnUpdater in columnUpdaters)
+        foreach (ColumnUpdater columnUpdater in columnUpdaters)
         {
             columnUpdater.Init(face);
         }

@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public static class ShuffleMechanism
@@ -16,7 +15,7 @@ public static class ShuffleMechanism
             int randomMovementIndex = new System.Random().Next(possibleMovements.Length);
             string randomMovement = possibleMovements[randomMovementIndex];
             rubiksCube.Manipulate(randomMovement);
-            yield return new WaitUntil(() => rubiksCube.AllFacesAreStatic());
+            yield return new WaitUntil(() => rubiksCube.readyToManipulate);
         }
         Face.rotatingSpeed = oldSpeed;
     }

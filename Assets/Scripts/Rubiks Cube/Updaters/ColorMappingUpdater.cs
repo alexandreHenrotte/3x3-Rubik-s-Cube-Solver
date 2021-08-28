@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public static class ColorMappingUpdater
@@ -8,9 +6,8 @@ public static class ColorMappingUpdater
     /*
      * Update the facetype of each color of all the cubes in the manîpulated face based on the movement
     */
-    public static IEnumerator Update(Face faceManipulated, Movement movement)
+    public static void Update(Face faceManipulated, Movement movement)
     {
-        yield return new WaitUntil(() => faceManipulated.RotationFinished());
         foreach (GameObject cube in faceManipulated.GetAllCubes())
         {
             for (int i = 0; i < cube.GetComponent<Cube>().colorFaceAssociations.Count; i++)
@@ -20,6 +17,7 @@ public static class ColorMappingUpdater
             }
         }
     }
+
     static Face.FaceType NewFaceColorMapping(Face.FaceType oldFaceType, Movement movement)
     {
         Face.FaceType[] mapping = new Face.FaceType[4];

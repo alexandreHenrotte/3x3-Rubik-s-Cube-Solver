@@ -1,13 +1,11 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class RubiksCube : MonoBehaviour
 {
     public Dictionary<Face.FaceType, Face> faces = new Dictionary<Face.FaceType, Face>();
+    public bool readyToManipulate = true;
 
     // Start is called before the first frame update
     void Start()
@@ -45,20 +43,30 @@ public class RubiksCube : MonoBehaviour
         return cube;
     }
 
-    public void Manipulate(string movementCall)
+    public void Manipulate(string movementCall, Face.FaceType relativeFrontFace = Face.FaceType.FRONT)
     {
-        if (AllFacesAreStatic())
+        StartCoroutine(ManipulateRoutine(movementCall, relativeFrontFace));
+    }
+
+    public IEnumerator ManipulateRoutine(string movementCall, Face.FaceType relativeFrontFace)
+    {
+        if (readyToManipulate)
         {
-            Movement movement = Movement.Translate(movementCall);
+            readyToManipulate = false;
+
+            Movement movement = Movement.Translate(movementCall, relativeFrontFace);
             Face faceToManipulate = faces[movement.faceType];
             faceToManipulate.Rotate(this, movement.isInverted);
-            StartCoroutine(ColorMappingUpdater.Update(faceToManipulate, movement));
+            yield return new WaitUntil(() => faceToManipulate.RotationFinished());
+            ColorMappingUpdater.Update(faceToManipulate, movement);
+
+            readyToManipulate = true;
         }
     }
 
     public void Manipulate(string[] movementCalls)
     {
-        if (AllFacesAreStatic())
+        if (readyToManipulate)
         {
             StartCoroutine(ManipulateMany(movementCalls));
         }
@@ -69,85 +77,23 @@ public class RubiksCube : MonoBehaviour
         foreach (string movementCall in movementCalls)
         {
             Manipulate(movementCall);
-            yield return new WaitUntil(() => AllFacesAreStatic());
+            yield return new WaitUntil(() => readyToManipulate);
         }
     }
 
     public void Solve()
     {
-        if (AllFacesAreStatic())
+        if (readyToManipulate)
         {
-            WhiteCross.Make(this);
+            StartCoroutine(WhiteCross.Make(this));
         }
     }
 
     public void Shuffle()
     {
-        if (AllFacesAreStatic())
+        if (readyToManipulate)
         {
             StartCoroutine(ShuffleMechanism.Shuffle(this));
         }
-    }
-
-    public bool AllFacesAreStatic()
-    {
-        foreach (Face face in faces.Values)
-        {
-            if (!face.RotationFinished())
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public void ChangeRelativeFacePositionning(Face.FaceType newFrontFace)
-    {
-        if (newFrontFace == Face.FaceType.FRONT)
-        {
-            Debug.Log("Face positionning is already set as asked");
-        }
-        else if (newFrontFace == Face.FaceType.UP || newFrontFace == Face.FaceType.BOTTOM)
-        {
-            throw new Exception($"Face type \"{newFrontFace}\" face cannot be set as new front face");
-        }
-        else
-        {
-            // Calculate offset between each face type
-            Face.FaceType[] relativeFaceTypes = { Face.FaceType.FRONT, Face.FaceType.LEFT, Face.FaceType.REAR, Face.FaceType.RIGHT }; // UP and BOTTOM are not relatives
-            int offset = Array.IndexOf(relativeFaceTypes, newFrontFace);
-
-            // Create new dictionnary for future faces
-            Dictionary<Face.FaceType, Face> newFaces = new Dictionary<Face.FaceType, Face>();
-            newFaces.Add(Face.FaceType.BOTTOM, faces[Face.FaceType.BOTTOM]);
-            newFaces.Add(Face.FaceType.UP, faces[Face.FaceType.UP]);
-
-            // Get the new faces and adapt their face updaters
-            for (int i = 0; i < relativeFaceTypes.Length; i++)
-            {
-                Face.FaceType i_FaceType = relativeFaceTypes[i];
-                Face.FaceType newFaceType = relativeFaceTypes[(i + offset) % relativeFaceTypes.Length];
-                Face oldFace = faces[i_FaceType];
-                Face newFace = faces[newFaceType];
-                newFace.faceUpdater = oldFace.faceUpdater;
-                newFaces.Add(i_FaceType, newFace);
-            }
-
-            // Set new faces
-            faces = newFaces;
-        }
-    }
-
-    public void ResetFacePositionning()
-    {
-        Dictionary<Face.FaceType, Face> newFaces = new Dictionary<Face.FaceType, Face>();
-        newFaces.Add(Face.FaceType.FRONT, faces.Single(f => f.Value.rotatingParent.name.Contains("front")).Value);
-        newFaces.Add(Face.FaceType.REAR, faces.Single(f => f.Value.rotatingParent.name.Contains("rear")).Value);
-        newFaces.Add(Face.FaceType.LEFT, faces.Single(f => f.Value.rotatingParent.name.Contains("left")).Value);
-        newFaces.Add(Face.FaceType.RIGHT, faces.Single(f => f.Value.rotatingParent.name.Contains("right")).Value);
-        newFaces.Add(Face.FaceType.BOTTOM, faces.Single(f => f.Value.rotatingParent.name.Contains("bottom")).Value);
-        newFaces.Add(Face.FaceType.UP, faces.Single(f => f.Value.rotatingParent.name.Contains("up")).Value);
-
-        faces = newFaces;
     }
 }

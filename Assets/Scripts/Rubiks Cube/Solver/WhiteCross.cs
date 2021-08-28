@@ -1,14 +1,13 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public static class WhiteCross
 {
     static RubiksCube rubiksCube;
-    static List<string> movementCallsToDo = new List<string>();
+    static bool faceFreeToRotate = false;
 
-    public static void Make(RubiksCube rubiksCube)
+    public static IEnumerator Make(RubiksCube rubiksCube)
     {
         // Set rubiksCube
         WhiteCross.rubiksCube = rubiksCube;
@@ -18,39 +17,37 @@ public static class WhiteCross
         {
             if (faceType != Face.FaceType.BOTTOM && faceType != Face.FaceType.UP)
             {
-                ManipulateWhitePlatesOnRow(faceType);
+                rubiksCube.StartCoroutine(ManipulateWhitePlatesOnRow(faceType));
+                yield return new WaitUntil(() => rubiksCube.readyToManipulate);
                 //ManipulateWhitePlatesOnColumn(faceType);
                 //SearchForCenteredWhitePlatesOnColumn(faceType);
             }
         }
 
-        rubiksCube.Manipulate(movementCallsToDo.ToArray());
-        movementCallsToDo.Clear();
 
+        // Find a middle white plate of row (only row 1 and 3) OR middle white plate of column
 
-            // Find a middle white plate of row (only row 1 and 3) OR middle white plate of column
+        // IF ROW
+        // a. if is on row 1
+        // --> F'
+        // --> turn white face until column touch the column that doesn't have white plate
+        // --> L'
+        // b. else if on row 3
+        // --> turn row until column first cube is not white
+        // --> F
+        // --> turn white face until column touch the column that doesn't have white plate
+        // --> R
 
-            // IF ROW
-            // a. if is on row 1
-            // --> F'
-            // --> turn white face until column touch the column that doesn't have white plate
-            // --> L'
-            // b. else if on row 3
-            // --> turn row until column first cube is not white
-            // --> F
-            // --> turn white face until column touch the column that doesn't have white plate
-            // --> R
-
-            // IF COLUMN
-            // --> turn white face until column touch the column that doesn't have white plate
-            // a. if is on left
-            // --> L'
-            // b. if is on right
-            // --> R
+        // IF COLUMN
+        // --> turn white face until column touch the column that doesn't have white plate
+        // a. if is on left
+        // --> L'
+        // b. if is on right
+        // --> R
         // Place white plate under his desired position
     }
 
-    static void ManipulateWhitePlatesOnRow(Face.FaceType faceType)
+    static IEnumerator ManipulateWhitePlatesOnRow(Face.FaceType faceType)
     {
         for (int i_row = 1; i_row <= 3; i_row += 2) // we don't want to search on second row
         {
@@ -59,25 +56,31 @@ public static class WhiteCross
 
             if (color == Face.Color.WHITE && i_row == 1)
             {
-                rubiksCube.ChangeRelativeFacePositionning(faceType);
+                //rubiksCube.ChangeRelativeFacePositionning(faceType);
 
-                movementCallsToDo.Add("Fi");
-                MakeFaceFreeToRotate(faceType);
-                movementCallsToDo.Add("Li");
+                rubiksCube.Manipulate("Fi", Face.FaceType.RIGHT);
+                yield return new WaitUntil(() => rubiksCube.readyToManipulate);
+                /*rubiksCube.StartCoroutine(MakeFaceFreeToRotate(faceType));
+                yield return new WaitUntil(() => faceFreeToRotate);
+                rubiksCube.Manipulate("Li");
+                yield return new WaitUntil(() => rubiksCube.readyToManipulate);*/
 
-                rubiksCube.ResetFacePositionning();
+                //rubiksCube.ResetFacePositionning();
             }
 
-            else if (color == Face.Color.WHITE && i_row == 3)
+            /*else if (color == Face.Color.WHITE && i_row == 3)
             {
                 rubiksCube.ChangeRelativeFacePositionning(faceType);
 
-                movementCallsToDo.Add("F");
-                MakeFaceFreeToRotate(faceType);
-                movementCallsToDo.Add("R");
+                rubiksCube.Manipulate("F");
+                yield return new WaitUntil(() => rubiksCube.readyToManipulate);
+                rubiksCube.StartCoroutine(MakeFaceFreeToRotate(faceType));
+                yield return new WaitUntil(() => faceFreeToRotate);
+                rubiksCube.Manipulate("R");
+                yield return new WaitUntil(() => rubiksCube.readyToManipulate);
 
                 rubiksCube.ResetFacePositionning();
-            }
+            }*/
         }
     }
 
@@ -96,13 +99,13 @@ public static class WhiteCross
     }
     */
 
-    static void MakeFaceFreeToRotate(Face.FaceType faceTypeToMove)
+    static IEnumerator MakeFaceFreeToRotate(Face.FaceType faceTypeToMove)
     {
         Face.FaceType[] relativeFaceTypes = { Face.FaceType.LEFT, Face.FaceType.REAR, Face.FaceType.RIGHT, Face.FaceType.FRONT }; // UP and BOTTOM are not relatives
 
         // Find number of rotations needed
         int numberOfNeededRotations = 0;
-        int indexOfFaceTypeToMove = Array.IndexOf(relativeFaceTypes, faceTypeToMove);
+        int indexOfFaceTypeToMove = Array.IndexOf(relativeFaceTypes, faceTypeToMove) + 1;
         for (int i = indexOfFaceTypeToMove; i < relativeFaceTypes.Length + indexOfFaceTypeToMove; i++)
         {
             Face.FaceType i_faceType = relativeFaceTypes[i % relativeFaceTypes.Length];
@@ -120,9 +123,12 @@ public static class WhiteCross
             string rotationMovementCall = "U";
             for (int i = 0; i < numberOfNeededRotations; i++)
             {
-                movementCallsToDo.Add(rotationMovementCall);
+                rubiksCube.Manipulate(rotationMovementCall);
+                yield return new WaitUntil(() => rubiksCube.readyToManipulate);
             }
         }
+
+        faceFreeToRotate = true;
     }
 
     static bool WhiteCrossDone()
