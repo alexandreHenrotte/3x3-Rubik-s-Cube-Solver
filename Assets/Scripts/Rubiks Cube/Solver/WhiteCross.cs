@@ -133,11 +133,11 @@ public static class WhiteCross
         switch (column)
         {
             case 1:
-                destinationFace = GetRelativeLeftFaceType(faceType);
+                destinationFace = RelativeFaceTypeGetter.GetRelativeLeft(faceType);
                 mov_elevator = "Li";
                 break;
             case 3:
-                destinationFace = GetRelativeRightFaceType(faceType);
+                destinationFace = RelativeFaceTypeGetter.GetRelativeRight(faceType);
                 mov_elevator = "R";
                 break;
         }
@@ -162,40 +162,6 @@ public static class WhiteCross
         }
 
         faceFreeToRotate = true;
-    }
-
-    static Face.FaceType GetRelativeLeftFaceType(Face.FaceType faceType)
-    {
-        switch (faceType)
-        {
-            case Face.FaceType.FRONT:
-                return Face.FaceType.LEFT;
-            case Face.FaceType.LEFT:
-                return Face.FaceType.REAR;
-            case Face.FaceType.REAR:
-                return Face.FaceType.RIGHT;
-            case Face.FaceType.RIGHT:
-                return Face.FaceType.FRONT;
-            default:
-                throw new Exception($"{faceType} is not a valid horizontal face type");
-        }
-    }
-
-    static Face.FaceType GetRelativeRightFaceType(Face.FaceType faceType)
-    {
-        switch (faceType)
-        {
-            case Face.FaceType.FRONT:
-                return Face.FaceType.RIGHT;
-            case Face.FaceType.LEFT:
-                return Face.FaceType.FRONT;
-            case Face.FaceType.REAR:
-                return Face.FaceType.LEFT;
-            case Face.FaceType.RIGHT:
-                return Face.FaceType.REAR;
-            default:
-                throw new Exception($"{faceType} is not a valid horizontal face type");
-        }
     }
 
     static bool WhiteCrossDone()
