@@ -17,6 +17,16 @@ public class Cube : MonoBehaviour
         }
         throw new Exception("The cube has no color for that face");
     }
+
+    public List<Face.FaceType> GetFaceTypes()
+    {
+        List<Face.FaceType> faceTypes = new List<Face.FaceType>();
+        foreach (ColorFaceAssociation colorFaceAssociation in colorFaceAssociations)
+        {
+            faceTypes.Add(colorFaceAssociation.faceType);
+        }
+        return faceTypes;
+    }
 }
 
 [Serializable]
