@@ -53,6 +53,8 @@ public class RubiksCube : MonoBehaviour
             yield return new WaitUntil(() => faceToManipulate.RotationFinished());
             ColorMappingUpdater.Update(faceToManipulate, movement);
 
+            // Put a small delay to protect an other manipulation to start before the finish of the current manipulation
+            yield return new WaitForSeconds(0.03f); 
             readyToManipulate = true;
         }
     }
