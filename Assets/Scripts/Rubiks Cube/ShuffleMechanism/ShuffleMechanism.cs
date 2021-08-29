@@ -8,7 +8,7 @@ public static class ShuffleMechanism
         const int NB_RANDOM_MOVEMENTS = 25;
         float oldSpeed = Face.rotatingSpeed;
 
-        Face.rotatingSpeed = 675f; // !!! If the rotatingSpeed is too high, cubes can move in bad positions (overlaping cubes) --> TODO
+        Face.rotatingSpeed = 675f;
         string[] possibleMovements = { "R", "Ri", "L", "Li", "B", "Bi", "D", "Di", "F", "Fi", "U", "Ui" };
         for (int i = 0; i < NB_RANDOM_MOVEMENTS; i++)
         {
