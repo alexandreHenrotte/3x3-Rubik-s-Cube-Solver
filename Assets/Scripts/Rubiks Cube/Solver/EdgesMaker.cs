@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EdgesMaker
+public class EdgesMaker : IMaker
 {
     public RubiksCube rubiksCube;
     public bool finished = false;
@@ -13,9 +13,9 @@ public class EdgesMaker
         this.rubiksCube = rubiksCube;
     }
 
-    public IEnumerator Work(RubiksCube rubiksCube)
+    public IEnumerator Work()
     {
-        while (!AllEdgesArePlaced())
+        while (!HasFinished())
         {
             Face.FaceType[] horizontalFaceTypes = { Face.FaceType.FRONT, Face.FaceType.LEFT, Face.FaceType.REAR, Face.FaceType.RIGHT };
             foreach (Face.FaceType faceType in horizontalFaceTypes)
@@ -66,7 +66,7 @@ public class EdgesMaker
         yield return new WaitUntil(() => rubiksCube.readyToManipulate);
     }
 
-    bool AllEdgesArePlaced()
+    public bool HasFinished()
     {
         return EdgeOnFaceIsDone(Face.FaceType.FRONT) &&
                EdgeOnFaceIsDone(Face.FaceType.LEFT) &&

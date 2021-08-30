@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class WhiteCrossMaker
+public class WhiteCrossMaker : IMaker
 {
     RubiksCube rubiksCube;
     bool faceFreeToRotate;
@@ -15,10 +15,10 @@ public class WhiteCrossMaker
         this.rubiksCube = rubiksCube;
     }
 
-    public IEnumerator Work(RubiksCube rubiksCube)
+    public IEnumerator Work()
     {
         int nbCubesWellPlaced = NbCubesWellPlaced();
-        while (!WhiteCrossDone())
+        while (!HasFinished())
         {
             foreach (Face.FaceType faceType in rubiksCube.faces.Keys)
             {
@@ -174,7 +174,7 @@ public class WhiteCrossMaker
         faceFreeToRotate = true;
     }
 
-    bool WhiteCrossDone()
+    public bool HasFinished()
     {
         return NbCubesWellPlaced() == 4;
     }

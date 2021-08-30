@@ -9,10 +9,12 @@ public class Solver
         WhiteCrossMaker whiteCrossMaker = new WhiteCrossMaker(rubiksCube);
         EdgesMaker edgesMaker = new EdgesMaker(rubiksCube);
 
-        rubiksCube.StartCoroutine(whiteCrossMaker.Work(rubiksCube));
+        // Step 1
+        rubiksCube.StartCoroutine(whiteCrossMaker.Work());
         yield return new WaitUntil(() => whiteCrossMaker.finished);
 
-        rubiksCube.StartCoroutine(edgesMaker.Work(rubiksCube));
+        // Step 2
+        rubiksCube.StartCoroutine(edgesMaker.Work());
         yield return new WaitUntil(() => edgesMaker.finished);
     }
 }
