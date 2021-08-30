@@ -17,6 +17,7 @@ public class WhiteCrossMaker
 
     public IEnumerator Work(RubiksCube rubiksCube)
     {
+        int nbCubesWellPlaced = NbCubesWellPlaced();
         while (!WhiteCrossDone())
         {
             foreach (Face.FaceType faceType in rubiksCube.faces.Keys)
@@ -25,12 +26,18 @@ public class WhiteCrossMaker
                 {
                     rubiksCube.StartCoroutine(ElevateBottomWhitePlatesIfPossible());
                     yield return new WaitUntil(() => rubiksCube.readyToManipulate);
+                    nbCubesWellPlaced++;
                 }
-
-                if (faceType != Face.FaceType.BOTTOM && faceType != Face.FaceType.UP)
+                else if (faceType != Face.FaceType.BOTTOM && faceType != Face.FaceType.UP)
                 {
                     rubiksCube.StartCoroutine(ManipulateWhitePlates(faceType));
                     yield return new WaitUntil(() => rubiksCube.readyToManipulate);
+                    nbCubesWellPlaced++;
+                }
+
+                if (nbCubesWellPlaced == 4) // We don't want to iterate more faces if white cross is made
+                {
+                    break;
                 }
             }
         }
@@ -169,9 +176,29 @@ public class WhiteCrossMaker
 
     bool WhiteCrossDone()
     {
-        return rubiksCube.GetCube(Face.FaceType.UP, 1, 2).GetColor(Face.FaceType.UP) == Face.Color.WHITE &&
-               rubiksCube.GetCube(Face.FaceType.UP, 2, 1).GetColor(Face.FaceType.UP) == Face.Color.WHITE &&
-               rubiksCube.GetCube(Face.FaceType.UP, 2, 3).GetColor(Face.FaceType.UP) == Face.Color.WHITE &&
-               rubiksCube.GetCube(Face.FaceType.UP, 3, 2).GetColor(Face.FaceType.UP) == Face.Color.WHITE;
+        return NbCubesWellPlaced() == 4;
+    }
+
+    int NbCubesWellPlaced()
+    {
+        List<Tuple<int, int>> cubesIndexes = new List<Tuple<int, int>>()
+        {
+            { new Tuple<int, int>(1, 2) },
+            { new Tuple<int, int>(2, 1) },
+            { new Tuple<int, int>(2, 3) },
+            { new Tuple<int, int>(3, 2) },
+        };
+
+        int nbCubesWellPlaced = 0;
+        foreach (Tuple<int, int> cubeIndex in cubesIndexes)
+        {
+            Cube cube = rubiksCube.GetCube(Face.FaceType.UP, cubeIndex.Item1, cubeIndex.Item2);
+            bool cubeWellPlaced = cube.GetColor(Face.FaceType.UP) == Face.Color.WHITE;
+            if (cubeWellPlaced)
+            {
+                nbCubesWellPlaced++;
+            }
+        }
+        return nbCubesWellPlaced;
     }
 }

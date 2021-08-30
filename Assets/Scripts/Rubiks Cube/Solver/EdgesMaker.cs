@@ -68,11 +68,6 @@ public class EdgesMaker
 
     bool AllEdgesArePlaced()
     {
-        Debug.Log(EdgeOnFaceIsDone(Face.FaceType.FRONT) &&
-               EdgeOnFaceIsDone(Face.FaceType.LEFT) &&
-               EdgeOnFaceIsDone(Face.FaceType.REAR) &&
-               EdgeOnFaceIsDone(Face.FaceType.RIGHT));
-
         return EdgeOnFaceIsDone(Face.FaceType.FRONT) &&
                EdgeOnFaceIsDone(Face.FaceType.LEFT) &&
                EdgeOnFaceIsDone(Face.FaceType.REAR) &&
