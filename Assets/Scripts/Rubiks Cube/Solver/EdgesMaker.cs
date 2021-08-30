@@ -15,22 +15,6 @@ public class EdgesMaker
 
     public IEnumerator Work(RubiksCube rubiksCube)
     {
-        // Do algorithm
-
-        // SI AUCUNE DE BONNE
-        // --> on tourne la face du dessus jusqu'à arriver jusqu'à un des trois cas possibles ci dessous
-
-        // SI DEUX ARRETES SUR FACES QUI SE TOUCHENT
-        // --> on met la face relative à gauche des deux faces qui se touchent et on fait l'algorithme
-        // --> les quatres sont maintenant bonnes
-
-        // SI DEUX ARRETES SUR FACES OPPOSEES
-        // --> on met la face relative directement sur une des deux faces et on fait l'algorithme mais sans le dernier mouvement (pas le U)
-        // --> on obtient le cas ou les deux arretes sont sur des faces qui se touchent
-
-        // SI TOUTES LES ARRETES SONT PLACES
-        // --> génial
-
         while (!AllEdgesArePlaced())
         {
             Face.FaceType[] horizontalFaceTypes = { Face.FaceType.FRONT, Face.FaceType.LEFT, Face.FaceType.REAR, Face.FaceType.RIGHT };
