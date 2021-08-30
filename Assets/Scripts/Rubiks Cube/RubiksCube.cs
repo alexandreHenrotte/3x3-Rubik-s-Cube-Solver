@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -59,15 +60,15 @@ public class RubiksCube : MonoBehaviour
         }
     }
 
-    public void ManipulateMany(string[] movementCalls, Face.FaceType relativeFrontFace = Face.FaceType.FRONT)
+    public void ManipulateMultipleTimes(string[] movementCalls, Face.FaceType relativeFrontFace = Face.FaceType.FRONT)
     {
         if (readyToManipulate)
         {
-            StartCoroutine(ManipulateManyRoutine(movementCalls, relativeFrontFace));
+            StartCoroutine(ManipulateMultipleTimesRoutine(movementCalls, relativeFrontFace));
         }
     }
 
-    IEnumerator ManipulateManyRoutine(string[] movementCalls, Face.FaceType relativeFrontFace)
+    IEnumerator ManipulateMultipleTimesRoutine(string[] movementCalls, Face.FaceType relativeFrontFace)
     {
         foreach (string movementCall in movementCalls)
         {
@@ -78,9 +79,9 @@ public class RubiksCube : MonoBehaviour
 
     public void Solve()
     {
-        if (readyToManipulate)
+        if (readyToManipulate && !IsFinished())
         {
-            StartCoroutine(WhiteCross.Make(this));
+            StartCoroutine(Solver.Start(this));
         }
     }
 
@@ -90,5 +91,30 @@ public class RubiksCube : MonoBehaviour
         {
             StartCoroutine(ShuffleMechanism.Shuffle(this));
         }
+    }
+
+    bool IsFinished()
+    {
+        foreach (Face.FaceType faceType in Enum.GetValues(typeof(Face.FaceType)))
+        {
+            try
+            {
+                foreach (Row row in faces[faceType].rows)
+                {
+                    foreach (GameObject cube in row.cubes)
+                    {
+                        if (cube.GetComponent<Cube>().GetColor(faceType) != (Face.Color)faceType)
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+            catch // The cube return an error if it doesn't have the asked color (which is possible in runtime)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 }

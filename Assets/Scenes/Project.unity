@@ -18659,7 +18659,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f83cd5eb588d20345b27f9975728433a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  colorFaceAssociations: []
+  colorFaceAssociations:
+  - faceType: 3
+    color: 3
 --- !u!65 &7716258939616989536
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -20225,7 +20227,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f83cd5eb588d20345b27f9975728433a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  colorFaceAssociations: []
+  colorFaceAssociations:
+  - faceType: 1
+    color: 1
 --- !u!4 &7716258940182350811
 Transform:
   m_ObjectHideFlags: 0
@@ -20967,7 +20971,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f83cd5eb588d20345b27f9975728433a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  colorFaceAssociations: []
+  colorFaceAssociations:
+  - faceType: 2
+    color: 2
 --- !u!4 &7716258940538136728
 Transform:
   m_ObjectHideFlags: 0
@@ -21364,7 +21370,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f83cd5eb588d20345b27f9975728433a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  colorFaceAssociations: []
+  colorFaceAssociations:
+  - faceType: 4
+    color: 4
 --- !u!4 &7716258940642483261
 Transform:
   m_ObjectHideFlags: 0
@@ -22163,7 +22171,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f83cd5eb588d20345b27f9975728433a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  colorFaceAssociations: []
+  colorFaceAssociations:
+  - faceType: 5
+    color: 5
 --- !u!54 &7716258941037500361
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -22654,7 +22664,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f83cd5eb588d20345b27f9975728433a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  colorFaceAssociations: []
+  colorFaceAssociations:
+  - faceType: 0
+    color: 0
 --- !u!4 &7716258941183201458
 Transform:
   m_ObjectHideFlags: 0

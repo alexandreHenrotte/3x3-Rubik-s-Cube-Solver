@@ -4,17 +4,19 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public static class WhiteCross
+public class WhiteCrossMaker
 {
-    static RubiksCube rubiksCube;
-    static bool faceFreeToRotate;
+    RubiksCube rubiksCube;
+    bool faceFreeToRotate;
+    public bool finished = false;
 
-    public static IEnumerator Make(RubiksCube rubiksCube)
+    public WhiteCrossMaker(RubiksCube rubiksCube)
     {
-        // Set rubiksCube
-        WhiteCross.rubiksCube = rubiksCube;
+        this.rubiksCube = rubiksCube;
+    }
 
-        // Do algorithm
+    public IEnumerator Work(RubiksCube rubiksCube)
+    {
         while (!WhiteCrossDone())
         {
             foreach (Face.FaceType faceType in rubiksCube.faces.Keys)
@@ -31,10 +33,11 @@ public static class WhiteCross
                     yield return new WaitUntil(() => rubiksCube.readyToManipulate);
                 }
             }
-        } 
+        }
+        this.finished = true;
     }
 
-    static IEnumerator ElevateBottomWhitePlatesIfPossible()
+    IEnumerator ElevateBottomWhitePlatesIfPossible()
     {
         Cube cube = GetOneMiddleWhiteCubeOnBottomFaceIfPossible();
         if (cube != null)
@@ -52,7 +55,7 @@ public static class WhiteCross
         }
     }
 
-    static Cube GetOneMiddleWhiteCubeOnBottomFaceIfPossible()
+    Cube GetOneMiddleWhiteCubeOnBottomFaceIfPossible()
     {
         List<Cube> potentialMiddleWhiteCubes = new List<Cube>()
         {
@@ -72,7 +75,7 @@ public static class WhiteCross
         return null;
     }
 
-    static IEnumerator ManipulateWhitePlates(Face.FaceType faceType)
+    IEnumerator ManipulateWhitePlates(Face.FaceType faceType)
     {
         Cube middleUpCube = rubiksCube.GetCube(faceType, 1, 2);
         Cube middleBottomCube = rubiksCube.GetCube(faceType, 3, 2);
@@ -98,7 +101,7 @@ public static class WhiteCross
         yield return new WaitUntil(() => rubiksCube.readyToManipulate);
     }
 
-    static IEnumerator ManipulateRow(Face.FaceType faceType, int row)
+    IEnumerator ManipulateRow(Face.FaceType faceType, int row)
     {
         // Make the relative front face able to rotate without destroying the existing parts of the white cross
         rubiksCube.StartCoroutine(MakeFaceFreeToRotate(faceType));
@@ -125,7 +128,7 @@ public static class WhiteCross
         yield return new WaitUntil(() => rubiksCube.readyToManipulate);
     }
 
-    static IEnumerator ManipulateColumn(Face.FaceType faceType, int column)
+    IEnumerator ManipulateColumn(Face.FaceType faceType, int column)
     {
         // Select movements and faces to check
         Face.FaceType destinationFace = new Face.FaceType();
@@ -151,7 +154,7 @@ public static class WhiteCross
         yield return new WaitUntil(() => rubiksCube.readyToManipulate);
     }
 
-    static IEnumerator MakeFaceFreeToRotate(Face.FaceType faceTypeToMakeFree)
+    IEnumerator MakeFaceFreeToRotate(Face.FaceType faceTypeToMakeFree)
     {
         faceFreeToRotate = false;
 
@@ -164,7 +167,7 @@ public static class WhiteCross
         faceFreeToRotate = true;
     }
 
-    static bool WhiteCrossDone()
+    bool WhiteCrossDone()
     {
         return rubiksCube.GetCube(Face.FaceType.UP, 1, 2).GetColor(Face.FaceType.UP) == Face.Color.WHITE &&
                rubiksCube.GetCube(Face.FaceType.UP, 2, 1).GetColor(Face.FaceType.UP) == Face.Color.WHITE &&
