@@ -20,5 +20,9 @@ public class HandleButtons : MonoBehaviour
         GameObject.Find("Fi").GetComponent<Button>().onClick.AddListener(delegate { rubiksCube.Manipulate("Fi"); });
         GameObject.Find("U").GetComponent<Button>().onClick.AddListener(delegate { rubiksCube.Manipulate("U"); });
         GameObject.Find("Ui").GetComponent<Button>().onClick.AddListener(delegate { rubiksCube.Manipulate("Ui"); });
+
+        GameObject.Find("Shuffle button").GetComponent<Button>().onClick.AddListener(delegate { rubiksCube.Shuffle(); });
+        GameObject.Find("Solve button").GetComponent<Button>().onClick.AddListener(delegate { rubiksCube.Solve(); });
+        GameObject.Find("Test button").GetComponent<Button>().onClick.AddListener(delegate { rubiksCube.Test(); });
     }
 }

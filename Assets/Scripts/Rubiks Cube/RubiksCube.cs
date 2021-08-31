@@ -37,18 +37,18 @@ public class RubiksCube : MonoBehaviour
         return cube;
     }
 
-    public void Manipulate(string movementCall, Face.FaceType relativeFrontFace = Face.FaceType.FRONT)
+    public void Manipulate(string movementCall, Face.FaceType relativeFrontFace = Face.FaceType.FRONT, bool rubiksCubeUpsideDown = false)
     {
-        StartCoroutine(ManipulateRoutine(movementCall, relativeFrontFace));
+        StartCoroutine(ManipulateRoutine(movementCall, relativeFrontFace, rubiksCubeUpsideDown));
     }
 
-    public IEnumerator ManipulateRoutine(string movementCall, Face.FaceType relativeFrontFace)
+    public IEnumerator ManipulateRoutine(string movementCall, Face.FaceType relativeFrontFace, bool rubiksCubeUpsideDown = false)
     {
         if (readyToManipulate)
         {
             readyToManipulate = false;
 
-            Movement movement = Movement.Translate(movementCall, relativeFrontFace);
+            Movement movement = Movement.Translate(movementCall, relativeFrontFace, rubiksCubeUpsideDown);
             Face faceToManipulate = faces[movement.faceType];
             faceToManipulate.Rotate(this, movement.isInverted);
             yield return new WaitUntil(() => faceToManipulate.RotationFinished());
@@ -60,19 +60,19 @@ public class RubiksCube : MonoBehaviour
         }
     }
 
-    public void ManipulateMultipleTimes(string[] movementCalls, Face.FaceType relativeFrontFace = Face.FaceType.FRONT)
+    public void ManipulateMultipleTimes(string[] movementCalls, Face.FaceType relativeFrontFace = Face.FaceType.FRONT, bool rubiksCubeUpsideDown = false)
     {
         if (readyToManipulate)
         {
-            StartCoroutine(ManipulateMultipleTimesRoutine(movementCalls, relativeFrontFace));
+            StartCoroutine(ManipulateMultipleTimesRoutine(movementCalls, relativeFrontFace, rubiksCubeUpsideDown));
         }
     }
 
-    IEnumerator ManipulateMultipleTimesRoutine(string[] movementCalls, Face.FaceType relativeFrontFace)
+    IEnumerator ManipulateMultipleTimesRoutine(string[] movementCalls, Face.FaceType relativeFrontFace, bool rubiksCubeUpsideDown = false)
     {
         foreach (string movementCall in movementCalls)
         {
-            Manipulate(movementCall, relativeFrontFace);
+            Manipulate(movementCall, relativeFrontFace, rubiksCubeUpsideDown);
             yield return new WaitUntil(() => readyToManipulate);
         }
     }
@@ -90,6 +90,14 @@ public class RubiksCube : MonoBehaviour
         if (readyToManipulate)
         {
             StartCoroutine(ShuffleMechanism.Shuffle(this));
+        }
+    }
+
+    public void Test()
+    {
+        if (readyToManipulate)
+        {
+            Manipulate("U", rubiksCubeUpsideDown:true);
         }
     }
 
