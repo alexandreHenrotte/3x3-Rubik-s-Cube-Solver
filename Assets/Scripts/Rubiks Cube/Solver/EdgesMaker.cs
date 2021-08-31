@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class EdgesMaker : IMaker
 {
-    public RubiksCube rubiksCube;
+    RubiksCube rubiksCube;
     public bool finished = false;
 
     public EdgesMaker(RubiksCube rubiksCube)
@@ -17,8 +17,7 @@ public class EdgesMaker : IMaker
     {
         while (!HasFinished())
         {
-            Face.FaceType[] horizontalFaceTypes = { Face.FaceType.FRONT, Face.FaceType.LEFT, Face.FaceType.REAR, Face.FaceType.RIGHT };
-            foreach (Face.FaceType faceType in horizontalFaceTypes)
+            foreach (Face.FaceType faceType in RelativeFaceTypeGetter.GetHorizontalFaceTypes())
             {
                 if (FaceIsInAdjacentCase(faceType))
                 {

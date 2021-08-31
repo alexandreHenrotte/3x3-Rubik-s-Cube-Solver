@@ -55,4 +55,9 @@ public static class RelativeFaceTypeGetter
                 throw new Exception($"{faceType} is not a valid horizontal face type");
         }
     }
+
+    public static Face.FaceType[] GetHorizontalFaceTypes()
+    {
+        return new Face.FaceType[] { Face.FaceType.FRONT, Face.FaceType.LEFT, Face.FaceType.REAR, Face.FaceType.RIGHT };
+    }
 }

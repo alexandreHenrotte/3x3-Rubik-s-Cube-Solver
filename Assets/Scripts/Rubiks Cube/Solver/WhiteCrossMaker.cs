@@ -181,7 +181,7 @@ public class WhiteCrossMaker : IMaker
 
     int NbCubesWellPlaced()
     {
-        List<Tuple<int, int>> cubesIndexes = new List<Tuple<int, int>>()
+        List<Tuple<int, int>> whiteCrossCubesIndexes = new List<Tuple<int, int>>()
         {
             { new Tuple<int, int>(1, 2) },
             { new Tuple<int, int>(2, 1) },
@@ -190,7 +190,7 @@ public class WhiteCrossMaker : IMaker
         };
 
         int nbCubesWellPlaced = 0;
-        foreach (Tuple<int, int> cubeIndex in cubesIndexes)
+        foreach (Tuple<int, int> cubeIndex in whiteCrossCubesIndexes)
         {
             Cube cube = rubiksCube.GetCube(Face.FaceType.UP, cubeIndex.Item1, cubeIndex.Item2);
             bool cubeWellPlaced = cube.GetColor(Face.FaceType.UP) == Face.Color.WHITE;

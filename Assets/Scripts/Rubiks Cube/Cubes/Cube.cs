@@ -18,6 +18,39 @@ public class Cube : MonoBehaviour
         throw new Exception("The cube has no color for that face");
     }
 
+    public bool HasColor(Face.Color color)
+    {
+        foreach (ColorFaceAssociation colorFaceAssociation in colorFaceAssociations)
+        {
+            if (colorFaceAssociation.color == color)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Face.FaceType GetColorFaceType(Face.Color color)
+    {
+        foreach (ColorFaceAssociation colorFaceAssociation in colorFaceAssociations)
+        {
+            if (colorFaceAssociation.color == color)
+            {
+                return colorFaceAssociation.faceType;
+            }
+        }
+        throw new Exception("The cube has no " + color);
+    }
+
+    public bool HasColorOnFaceType(Face.Color color, Face.FaceType faceType)
+    {
+        if (HasColor(color) && GetColorFaceType(color) == faceType)
+        {
+            return true;
+        }
+        return false;
+    }
+
     public List<Face.FaceType> GetFaceTypes()
     {
         List<Face.FaceType> faceTypes = new List<Face.FaceType>();
