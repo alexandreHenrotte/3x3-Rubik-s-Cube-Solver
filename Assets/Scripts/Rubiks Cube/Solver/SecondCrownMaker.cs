@@ -19,10 +19,24 @@ class SecondCrownMaker : IMaker
     public IEnumerator Work()
     {
         Debug.Log("Second crown ");
-        foreach (Face.FaceType faceType in RelativeFaceTypeGetter.GetHorizontalFaceTypes())
+        while (!HasFinished())
         {
-            yield return FirstPass(faceType);
+            while (!SituationStuck())
+            {
+                foreach (Face.FaceType faceType in RelativeFaceTypeGetter.GetHorizontalFaceTypes())
+                {
+                    rubiksCube.StartCoroutine(FirstPass(faceType));
+                    yield return new WaitUntil(() => rubiksCube.readyToManipulate);
+                }
+
+                rubiksCube.Manipulate("U", rubiksCubeUpsideDown: true);
+                yield return new WaitUntil(() => rubiksCube.readyToManipulate);
+            }
+
+            rubiksCube.StartCoroutine(UnstuckSituation());
+            yield return new WaitUntil(() => rubiksCube.readyToManipulate);
         }
+
         finished = true;
     }
 
@@ -30,22 +44,57 @@ class SecondCrownMaker : IMaker
     {
         Cube cube = rubiksCube.GetCube(relativeFrontFaceType, 3, 2);
         bool frontColorCubeIsGood = cube.GetColor(relativeFrontFaceType) == (Face.Color)relativeFrontFaceType;
-        bool upColorCubeMatchWithLeft = cube.GetColor(Face.FaceType.UP) == (Face.Color)RelativeFaceTypeGetter.GetRelativeLeft(relativeFrontFaceType);
-        bool upColorCubeMatchWithRight = cube.GetColor(Face.FaceType.UP) == (Face.Color)RelativeFaceTypeGetter.GetRelativeRight(relativeFrontFaceType);
+        bool upColorCubeMatchWithLeft = cube.GetColor(Face.FaceType.BOTTOM) == (Face.Color)RelativeFaceTypeGetter.GetRelativeRight(relativeFrontFaceType);
+        bool upColorCubeMatchWithRight = cube.GetColor(Face.FaceType.BOTTOM) == (Face.Color)RelativeFaceTypeGetter.GetRelativeLeft(relativeFrontFaceType);
 
-        if (frontColorCubeIsGood)
+        if (frontColorCubeIsGood && upColorCubeMatchWithLeft)
         {
-            string[] movements = new string[8];
-            if (upColorCubeMatchWithLeft)
-            {
-                movements = new string[] { "Ui", "Li", "U", "L", "U", "F", "Ui", "Fi" };
-            }
-            else if (upColorCubeMatchWithRight)
-            {
-                movements = new string[] { "U", "R", "Ui", "Ri", "Ui", "Fi", "U", "F" };
-            }
+            rubiksCube.StartCoroutine(MoveLeft(relativeFrontFaceType));
+        }
+        else if (frontColorCubeIsGood && upColorCubeMatchWithRight)
+        {
+            rubiksCube.StartCoroutine(MoveRight(relativeFrontFaceType));
+        }
+        yield return new WaitUntil(() => rubiksCube.readyToManipulate);
+    }
 
-            yield return rubiksCube.ManipulateMultipleTimesRoutine(movements, relativeFrontFaceType, true);
+    IEnumerator MoveLeft(Face.FaceType relativeFrontFaceType)
+    {
+        Debug.Log("Move left" + " : " + relativeFrontFaceType);
+        string[] movements = { "Ui", "Li", "U", "L", "U", "F", "Ui", "Fi" };
+        rubiksCube.ManipulateMultipleTimes(movements, relativeFrontFaceType, true);
+        yield return new WaitUntil(() => rubiksCube.readyToManipulate);
+    }
+
+    IEnumerator MoveRight(Face.FaceType relativeFrontFaceType)
+    {
+        Debug.Log("Move right" + " : " + relativeFrontFaceType);
+        string[]movements = new string[] { "U", "R", "Ui", "Ri", "Ui", "Fi", "U", "F" };
+        rubiksCube.ManipulateMultipleTimes(movements, relativeFrontFaceType, true);
+        yield return new WaitUntil(() => rubiksCube.readyToManipulate);
+    }
+
+    bool SituationStuck()
+    {
+        foreach (Face.FaceType faceType in RelativeFaceTypeGetter.GetHorizontalFaceTypes())
+        {
+            if (!rubiksCube.GetCube(faceType, 3, 2).HasColor(Face.Color.YELLOW))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    IEnumerator UnstuckSituation()
+    {
+        foreach (Face.FaceType faceType in RelativeFaceTypeGetter.GetHorizontalFaceTypes())
+        {
+            if (!rubiksCube.GetCube(faceType, 2, 3).IsPlaced())
+            {
+                rubiksCube.StartCoroutine(MoveLeft(faceType));
+                yield return new WaitUntil(() => rubiksCube.readyToManipulate);
+            }
         }
     }
 
@@ -57,7 +106,7 @@ class SecondCrownMaker : IMaker
             {
                 for (int i_column = 1; i_column <= 3; i_column++)
                 {
-                    if (rubiksCube.GetCube(faceType, i_row, i_column).GetColor(faceType) != (Face.Color)faceType)
+                    if (!rubiksCube.GetCube(faceType, i_row, i_column).IsPlaced())
                     {
                         return false;
                     }

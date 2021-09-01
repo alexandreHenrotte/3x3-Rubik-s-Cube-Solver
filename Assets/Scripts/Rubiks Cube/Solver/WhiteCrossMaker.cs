@@ -25,12 +25,14 @@ public class WhiteCrossMaker : IMaker
             {
                 if (faceType == Face.FaceType.BOTTOM)
                 {
-                    yield return ElevateBottomWhitePlatesIfPossible();
+                    rubiksCube.StartCoroutine(ElevateBottomWhitePlatesIfPossible());
+                    yield return new WaitUntil(() => rubiksCube.readyToManipulate);
                     nbCubesWellPlaced++;
                 }
                 else if (faceType != Face.FaceType.BOTTOM && faceType != Face.FaceType.UP)
                 {
-                    yield return ManipulateWhitePlates(faceType);
+                    rubiksCube.StartCoroutine(ManipulateWhitePlates(faceType));
+                    yield return new WaitUntil(() => rubiksCube.readyToManipulate);
                     nbCubesWellPlaced++;
                 }
 
@@ -40,7 +42,7 @@ public class WhiteCrossMaker : IMaker
                 }
             }
         }
-        this.finished = true;
+        finished = true;
     }
 
     IEnumerator ElevateBottomWhitePlatesIfPossible()
@@ -55,7 +57,8 @@ public class WhiteCrossMaker : IMaker
             yield return MakeFaceFreeToRotate(destinationFace);
 
             // Rotate the relative face
-            yield return rubiksCube.ManipulateRoutine("Fi", destinationFace);
+            rubiksCube.Manipulate("Fi", destinationFace);
+            yield return new WaitUntil(() => rubiksCube.readyToManipulate);
         }
     }
 
@@ -88,26 +91,28 @@ public class WhiteCrossMaker : IMaker
 
         if (middleUpCube.GetColor(faceType) == Face.Color.WHITE)
         {
-            yield return ManipulateRow(faceType, 1);
+            rubiksCube.StartCoroutine(ManipulateRow(faceType, 1));
         }
         else if (middleBottomCube.GetColor(faceType) == Face.Color.WHITE)
         {
-            yield return ManipulateRow(faceType, 3);
+            rubiksCube.StartCoroutine(ManipulateRow(faceType, 3));
         }
         else if (middleLeftCube.GetColor(faceType) == Face.Color.WHITE)
         {
-            yield return ManipulateColumn(faceType, 1);
+            rubiksCube.StartCoroutine(ManipulateColumn(faceType, 1));
         }
         else if (middleRightCube.GetColor(faceType) == Face.Color.WHITE)
         {
-            yield return ManipulateColumn(faceType, 3);
+            rubiksCube.StartCoroutine(ManipulateColumn(faceType, 3));
         }
+        yield return new WaitUntil(() => rubiksCube.readyToManipulate);
     }
 
     IEnumerator ManipulateRow(Face.FaceType faceType, int row)
     {
         // Make the relative front face able to rotate without destroying the existing parts of the white cross
-        yield return MakeFaceFreeToRotate(faceType);
+        rubiksCube.StartCoroutine(MakeFaceFreeToRotate(faceType));
+        yield return new WaitUntil(() => rubiksCube.readyToManipulate);
 
         // Select movements and faces to check
         string mov_rowToColumn = "";
@@ -122,10 +127,12 @@ public class WhiteCrossMaker : IMaker
         }
 
         // Make the relative front face rotate (clockwork or anticlockwork)
-        yield return rubiksCube.ManipulateRoutine(mov_rowToColumn, faceType);
+        rubiksCube.Manipulate(mov_rowToColumn, faceType);
+        yield return new WaitUntil(() => rubiksCube.readyToManipulate);
 
         // The middle white plate in the row has now been converted in column so we can manipulate it as a column
-        yield return ManipulateColumn(faceType, row);
+        rubiksCube.StartCoroutine(ManipulateColumn(faceType, row));
+        yield return new WaitUntil(() => rubiksCube.readyToManipulate);
     }
 
     IEnumerator ManipulateColumn(Face.FaceType faceType, int column)
@@ -146,10 +153,12 @@ public class WhiteCrossMaker : IMaker
         }
 
         // Make the relative face (left or right) be able to rotate without destroying the existing parts of the white cross
-        yield return MakeFaceFreeToRotate(destinationFace);
+        rubiksCube.StartCoroutine(MakeFaceFreeToRotate(destinationFace));
+        yield return new WaitUntil(() => rubiksCube.readyToManipulate);
 
         // Make the relative face (left or right) rotate (clockwork or anticlockwork)
-        yield return rubiksCube.ManipulateRoutine(mov_elevator, faceType);
+        rubiksCube.Manipulate(mov_elevator, faceType);
+        yield return new WaitUntil(() => rubiksCube.readyToManipulate);
     }
 
     IEnumerator MakeFaceFreeToRotate(Face.FaceType faceTypeToMakeFree)
@@ -158,7 +167,8 @@ public class WhiteCrossMaker : IMaker
 
         while (rubiksCube.GetCube(faceTypeToMakeFree, 1, 2).GetColor(Face.FaceType.UP) == Face.Color.WHITE)
         {
-            yield return rubiksCube.ManipulateRoutine("U");
+            rubiksCube.Manipulate("U");
+            yield return new WaitUntil(() => rubiksCube.readyToManipulate);
 
             if (HasFinished())
             {

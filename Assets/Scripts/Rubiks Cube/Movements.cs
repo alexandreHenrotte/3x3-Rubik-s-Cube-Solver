@@ -28,12 +28,6 @@ public class Movement
     {
         Dictionary<char, Face.FaceType> movementFaceCalls = new Dictionary<char, Face.FaceType>();
 
-        if (rubiksCubeUpsideDown && (relativeFrontFace == Face.FaceType.LEFT || relativeFrontFace == Face.FaceType.RIGHT))
-        {
-            // LEFT become RIGHT and RIGHT becomes LEFT
-            relativeFrontFace = RelativeFaceTypeGetter.GetRelativeLeft(RelativeFaceTypeGetter.GetRelativeLeft(relativeFrontFace));
-        }
-
         switch (relativeFrontFace)
         {
             case Face.FaceType.FRONT:

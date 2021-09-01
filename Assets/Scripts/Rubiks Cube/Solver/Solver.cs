@@ -7,7 +7,7 @@ public class Solver
     public static IEnumerator Start(RubiksCube rubiksCube)
     {
         float oldSpeed = Face.rotatingSpeed;
-        Face.rotatingSpeed = 675f;
+        Face.rotatingSpeed = 1000f;
 
         // Step makers
         WhiteCrossMaker whiteCrossMaker = new WhiteCrossMaker(rubiksCube);
@@ -16,19 +16,24 @@ public class Solver
         SecondCrownMaker secondCrownMaker = new SecondCrownMaker(rubiksCube);
 
         // Step 1
-        yield return whiteCrossMaker.Work() ;
+        Debug.Log("repet");
+        rubiksCube.StartCoroutine(whiteCrossMaker.Work());
+        yield return new WaitUntil(() => whiteCrossMaker.finished);
         yield return new WaitForSeconds(2f);
 
         // Step 2
-        yield return edgesMaker.Work();
+        rubiksCube.StartCoroutine(edgesMaker.Work());
+        yield return new WaitUntil(() => edgesMaker.finished);
         yield return new WaitForSeconds(2f);
 
         // Step 3
-        yield return whiteCornersMaker.Work();
+        rubiksCube.StartCoroutine(whiteCornersMaker.Work());
+        yield return new WaitUntil(() => whiteCornersMaker.finished);
         yield return new WaitForSeconds(2f);
 
         // Step 4
-        yield return secondCrownMaker.Work();
+        rubiksCube.StartCoroutine(secondCrownMaker.Work());
+        //yield return new WaitUntil(() => secondCrownMaker.finished);
         yield return new WaitForSeconds(2f);
 
         Face.rotatingSpeed = oldSpeed;

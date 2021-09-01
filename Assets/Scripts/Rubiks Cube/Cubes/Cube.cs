@@ -60,6 +60,20 @@ public class Cube : MonoBehaviour
         }
         return faceTypes;
     }
+
+    public bool IsPlaced()
+    {
+        foreach (ColorFaceAssociation colorFaceAssociation in colorFaceAssociations)
+        {
+            Face.Color faceStaticColor = (Face.Color)colorFaceAssociation.faceType;
+            Face.Color cubeColor = colorFaceAssociation.color;
+            if (faceStaticColor != cubeColor)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
 }
 
 [Serializable]
