@@ -21,11 +21,11 @@ class SecondCrownMaker : IMaker
         Debug.Log("Second crown ");
         while (!HasFinished())
         {
-            while (!SituationStuck())
+            while (!SituationIsBlocked())
             {
                 foreach (Face.FaceType faceType in RelativeFaceTypeGetter.GetHorizontalFaceTypes())
                 {
-                    rubiksCube.StartCoroutine(FirstPass(faceType));
+                    rubiksCube.StartCoroutine(PlaceCubes(faceType));
                     yield return new WaitUntil(() => rubiksCube.readyToManipulate);
                 }
 
@@ -33,14 +33,26 @@ class SecondCrownMaker : IMaker
                 yield return new WaitUntil(() => rubiksCube.readyToManipulate);
             }
 
-            rubiksCube.StartCoroutine(UnstuckSituation());
+            rubiksCube.StartCoroutine(UnblockSituation());
             yield return new WaitUntil(() => rubiksCube.readyToManipulate);
         }
 
         finished = true;
     }
 
-    IEnumerator FirstPass(Face.FaceType relativeFrontFaceType)
+    bool SituationIsBlocked()
+    {
+        foreach (Face.FaceType faceType in RelativeFaceTypeGetter.GetHorizontalFaceTypes())
+        {
+            if (!rubiksCube.GetCube(faceType, 3, 2).HasColor(Face.Color.YELLOW))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    IEnumerator PlaceCubes(Face.FaceType relativeFrontFaceType)
     {
         Cube cube = rubiksCube.GetCube(relativeFrontFaceType, 3, 2);
         bool frontColorCubeIsGood = cube.GetColor(relativeFrontFaceType) == (Face.Color)relativeFrontFaceType;
@@ -74,19 +86,7 @@ class SecondCrownMaker : IMaker
         yield return new WaitUntil(() => rubiksCube.readyToManipulate);
     }
 
-    bool SituationStuck()
-    {
-        foreach (Face.FaceType faceType in RelativeFaceTypeGetter.GetHorizontalFaceTypes())
-        {
-            if (!rubiksCube.GetCube(faceType, 3, 2).HasColor(Face.Color.YELLOW))
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    IEnumerator UnstuckSituation()
+    IEnumerator UnblockSituation()
     {
         foreach (Face.FaceType faceType in RelativeFaceTypeGetter.GetHorizontalFaceTypes())
         {
