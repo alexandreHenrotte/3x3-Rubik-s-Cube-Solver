@@ -18,11 +18,10 @@ class SecondCrownMaker : IMaker
 
     public IEnumerator Work()
     {
-        Debug.Log("Here");
+        Debug.Log("Second crown ");
         foreach (Face.FaceType faceType in RelativeFaceTypeGetter.GetHorizontalFaceTypes())
         {
-            rubiksCube.StartCoroutine(FirstPass(faceType));
-            yield return new WaitUntil(() => rubiksCube.readyToManipulate);
+            yield return FirstPass(faceType);
         }
         finished = true;
     }
@@ -46,8 +45,7 @@ class SecondCrownMaker : IMaker
                 movements = new string[] { "U", "R", "Ui", "Ri", "Ui", "Fi", "U", "F" };
             }
 
-            rubiksCube.ManipulateMultipleTimes(movements, relativeFrontFaceType, true);
-            yield return new WaitUntil(() => rubiksCube.readyToManipulate);
+            yield return rubiksCube.ManipulateMultipleTimesRoutine(movements, relativeFrontFaceType, true);
         }
     }
 

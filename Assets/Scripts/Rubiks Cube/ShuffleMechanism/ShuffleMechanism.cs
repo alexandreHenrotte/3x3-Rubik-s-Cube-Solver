@@ -14,7 +14,7 @@ public static class ShuffleMechanism
         {
             int randomMovementIndex = new System.Random().Next(possibleMovements.Length);
             string randomMovement = possibleMovements[randomMovementIndex];
-            rubiksCube.Manipulate(randomMovement);
+            yield return rubiksCube.ManipulateRoutine(randomMovement);
             yield return new WaitUntil(() => rubiksCube.readyToManipulate);
         }
         Face.rotatingSpeed = oldSpeed;

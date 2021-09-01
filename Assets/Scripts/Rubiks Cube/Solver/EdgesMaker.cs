@@ -17,26 +17,23 @@ public class EdgesMaker : IMaker
     {
         while (!HasFinished())
         {
+            Debug.Log("Edges");
             foreach (Face.FaceType faceType in RelativeFaceTypeGetter.GetHorizontalFaceTypes())
             {
                 if (FaceIsInAdjacentCase(faceType))
                 {
-                    rubiksCube.StartCoroutine(AdjacentCaseAlgorithm(faceType));
-                    yield return new WaitUntil(() => rubiksCube.readyToManipulate);
+                    yield return AdjacentCaseAlgorithm(faceType);
                     break;
                 }
                 else if (FaceIsInOppositeCase(faceType))
                 {
-                    rubiksCube.StartCoroutine(OppositeCaseAlgorithm()); // The opposite case algorithm make the face fall into the adjacent case algorithm
-                    yield return new WaitUntil(() => rubiksCube.readyToManipulate);
-                    rubiksCube.StartCoroutine(AdjacentCaseAlgorithm(faceType));
-                    yield return new WaitUntil(() => rubiksCube.readyToManipulate);
+                    yield return OppositeCaseAlgorithm(); // The opposite case algorithm make the face fall into the adjacent case algorithm
+                    yield return AdjacentCaseAlgorithm(faceType);
                     break;
                 }
             }
 
-            rubiksCube.Manipulate("U");
-            yield return new WaitUntil(() => rubiksCube.readyToManipulate);
+            yield return rubiksCube.ManipulateRoutine("U");
         }
         this.finished = true;
     }
@@ -49,8 +46,7 @@ public class EdgesMaker : IMaker
     IEnumerator AdjacentCaseAlgorithm(Face.FaceType faceType)
     {
         string[] movements = { "R", "U", "Ri", "U", "R", "U", "U", "Ri", "U" };
-        rubiksCube.ManipulateMultipleTimes(movements, RelativeFaceTypeGetter.GetRelativeLeft(faceType));
-        yield return new WaitUntil(() => rubiksCube.readyToManipulate);
+        yield return rubiksCube.ManipulateMultipleTimesRoutine(movements, RelativeFaceTypeGetter.GetRelativeLeft(faceType));
     }
 
     bool FaceIsInOppositeCase(Face.FaceType faceType)
@@ -61,8 +57,7 @@ public class EdgesMaker : IMaker
     IEnumerator OppositeCaseAlgorithm()
     {
         string[] movements = { "R", "U", "Ri", "U", "R", "U", "U", "Ri" };
-        rubiksCube.ManipulateMultipleTimes(movements);
-        yield return new WaitUntil(() => rubiksCube.readyToManipulate);
+        yield return rubiksCube.ManipulateMultipleTimesRoutine(movements);
     }
 
     public bool HasFinished()

@@ -1,12 +1,14 @@
 using System;
 using UnityEngine;
 
-public static class ColorMappingUpdater
+public class ColorMappingUpdater
 {
     /*
      * Update the facetype of each color of all the cubes in the manîpulated face based on the movement
     */
-    public static void Update(Face faceManipulated, Movement movement)
+    public bool finished = false;
+
+    public void Update(Face faceManipulated, Movement movement)
     {
         foreach (GameObject cube in faceManipulated.GetAllCubes())
         {
@@ -16,9 +18,10 @@ public static class ColorMappingUpdater
                 colorFaceAssociation.faceType = NewFaceColorMapping(colorFaceAssociation.faceType, movement);
             }
         }
+        finished = true;
     }
 
-    static Face.FaceType NewFaceColorMapping(Face.FaceType oldFaceType, Movement movement)
+    Face.FaceType NewFaceColorMapping(Face.FaceType oldFaceType, Movement movement)
     {
         Face.FaceType[] mapping = new Face.FaceType[4];
         if (movement.faceType == Face.FaceType.UP)

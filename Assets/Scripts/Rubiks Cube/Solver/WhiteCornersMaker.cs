@@ -27,6 +27,7 @@ class WhiteCornersMaker : IMaker
 
     public IEnumerator Work()
     {
+        Debug.Log("White corners");
         while (!HasFinished())
         {
             // EVERYTHING ON THE TOP
@@ -36,17 +37,14 @@ class WhiteCornersMaker : IMaker
                 bool cubeHasWhite = cube.HasColor(Face.Color.WHITE);
                 if (cubeHasWhite && !CubeMatchBothFacesOnTop(cube))
                 {
-                    rubiksCube.StartCoroutine(BringDownCube(faceType));
-                    yield return new WaitUntil(() => rubiksCube.readyToManipulate);
-                    rubiksCube.StartCoroutine(PlaceCubeInHisCorner(cube, faceType));
-                    yield return new WaitUntil(() => rubiksCube.readyToManipulate);
+                    yield return BringDownCube(faceType);
+                    yield return PlaceCubeInHisCorner(cube, faceType);
                 }
                 else if (cubeHasWhite && CubeMatchBothFacesOnTop(cube) && !CubeIsOriented(cube))
                 {
                     while (!CubeIsOriented(cube))
                     {
-                        rubiksCube.StartCoroutine(PlaceCornerAlgorithm(faceType));
-                        yield return new WaitUntil(() => rubiksCube.readyToManipulate);
+                        yield return PlaceCornerAlgorithm(faceType);
                     }
                 }
             }
@@ -58,8 +56,7 @@ class WhiteCornersMaker : IMaker
                 bool cubeHasWhite = cube.HasColor(Face.Color.WHITE);
                 if (cubeHasWhite)
                 {
-                    rubiksCube.StartCoroutine(PlaceCubeInHisCorner(cube, faceType));
-                    yield return new WaitUntil(() => rubiksCube.readyToManipulate);
+                    yield return PlaceCubeInHisCorner(cube, faceType);
                 }
             }
 
@@ -69,10 +66,8 @@ class WhiteCornersMaker : IMaker
 
     IEnumerator PlaceCubeInHisCorner(Cube cube, Face.FaceType faceType)
     {
-        rubiksCube.StartCoroutine(MoveCubeUnderIsCorner(cube, faceType));
-        yield return new WaitUntil(() => cubeReadyToBeElevated);
-        rubiksCube.StartCoroutine(ElevateCubeToHisCorner(cube, newCubeFaceType));
-        yield return new WaitUntil(() => rubiksCube.readyToManipulate);
+        yield return MoveCubeUnderIsCorner(cube, faceType);
+        yield return ElevateCubeToHisCorner(cube, newCubeFaceType);
     }
 
     IEnumerator MoveCubeUnderIsCorner(Cube cube, Face.FaceType relativeFrontFaceType)
@@ -82,8 +77,7 @@ class WhiteCornersMaker : IMaker
         int nbRotation = 0;
         while (!CubeMatchBothFacesOnBottom(cube))
         {
-            rubiksCube.Manipulate("D");
-            yield return new WaitUntil(() => rubiksCube.readyToManipulate);
+            yield return rubiksCube.ManipulateRoutine("D");
             nbRotation++;
         }
 
@@ -114,23 +108,20 @@ class WhiteCornersMaker : IMaker
 
         for (int i = 0; i < nbManipulation; i++)
         {
-            rubiksCube.StartCoroutine(PlaceCornerAlgorithm(relativeFrontFaceType));
-            yield return new WaitUntil(() => rubiksCube.readyToManipulate);
+            yield return PlaceCornerAlgorithm(relativeFrontFaceType);
         }
     }
 
     IEnumerator PlaceCornerAlgorithm(Face.FaceType relativeFrontFaceType)
     {
         string[] movements = { "Ri", "Di", "R", "D" };
-        rubiksCube.ManipulateMultipleTimes(movements, relativeFrontFaceType);
-        yield return new WaitUntil(() => rubiksCube.readyToManipulate);
+        yield return rubiksCube.ManipulateMultipleTimesRoutine(movements, relativeFrontFaceType);
     }
 
     IEnumerator BringDownCube(Face.FaceType relativeFrontFaceType)
     {
         string[] movements = { "Ri", "Di", "R" };
-        rubiksCube.ManipulateMultipleTimes(movements, relativeFrontFaceType);
-        yield return new WaitUntil(() => rubiksCube.readyToManipulate);
+        yield return rubiksCube.ManipulateMultipleTimesRoutine(movements, relativeFrontFaceType);
     }
 
     bool AllCubesMatchTheirFaces()
