@@ -20,6 +20,7 @@ class WhiteCornersMaker : IMaker
     public IEnumerator Work()
     {
         Debug.Log("White corners");
+
         while (!FourCornersAreOnTop())
         {
             foreach (Face.FaceType faceType in RelativeFaceTypeGetter.GetHorizontalFaceTypes())
