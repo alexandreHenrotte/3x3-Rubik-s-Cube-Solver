@@ -29,18 +29,6 @@ class WhiteCornersMaker : IMaker
     {
         while (!HasFinished())
         {
-            // EVERYTHING ON THE BOTTOM
-            foreach (Face.FaceType faceType in RelativeFaceTypeGetter.GetHorizontalFaceTypes())
-            {
-                Cube cube = rubiksCube.GetCube(faceType, 3, 3);
-                bool cubeHasWhite = cube.HasColor(Face.Color.WHITE);
-                if (cubeHasWhite)
-                {
-                    rubiksCube.StartCoroutine(PlaceCubeInHisCorner(cube, faceType));
-                    yield return new WaitUntil(() => rubiksCube.readyToManipulate);
-                }
-            }
-
             // EVERYTHING ON THE TOP
             foreach (Face.FaceType faceType in RelativeFaceTypeGetter.GetHorizontalFaceTypes())
             {
@@ -62,8 +50,20 @@ class WhiteCornersMaker : IMaker
                     }
                 }
             }
-        }
 
+            // EVERYTHING ON THE BOTTOM
+            foreach (Face.FaceType faceType in RelativeFaceTypeGetter.GetHorizontalFaceTypes())
+            {
+                Cube cube = rubiksCube.GetCube(faceType, 3, 3);
+                bool cubeHasWhite = cube.HasColor(Face.Color.WHITE);
+                if (cubeHasWhite)
+                {
+                    rubiksCube.StartCoroutine(PlaceCubeInHisCorner(cube, faceType));
+                    yield return new WaitUntil(() => rubiksCube.readyToManipulate);
+                }
+            }
+
+        }
         finished = true;
     }
 
@@ -195,19 +195,6 @@ class WhiteCornersMaker : IMaker
         return CubeIsPlaced;
     }
 
-
-    bool CubesAreOriented()
-    {
-        foreach (Tuple<int, int> cornerIndex in cornersIndexes)
-        {
-            Cube cube = rubiksCube.GetCube(Face.FaceType.UP, cornerIndex.Item1, cornerIndex.Item2);
-            if (!cube.HasColorOnFaceType(Face.Color.WHITE, Face.FaceType.UP))
-            {
-                return false;
-            }
-        }
-        return true;
-    }
     bool CubeIsOriented(Cube cube)
     {
         return cube.HasColorOnFaceType(Face.Color.WHITE, Face.FaceType.UP);     
