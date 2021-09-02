@@ -6,11 +6,13 @@ using UnityEngine;
 public class EdgesMaker : IMaker
 {
     RubiksCube rubiksCube;
+    bool rubiksCubeUpsideDown;
     public bool finished = false;
 
-    public EdgesMaker(RubiksCube rubiksCube)
+    public EdgesMaker(RubiksCube rubiksCube, bool cubeUpsideDown = false)
     {
         this.rubiksCube = rubiksCube;
+        this.rubiksCubeUpsideDown = cubeUpsideDown;
     }
 
     public IEnumerator Work()
@@ -36,7 +38,7 @@ public class EdgesMaker : IMaker
                 }
             }
 
-            rubiksCube.Manipulate("U");
+            rubiksCube.Manipulate("Ui", rubiksCubeUpsideDown:rubiksCubeUpsideDown);
             yield return new WaitUntil(() => rubiksCube.readyToManipulate);
         }
 
@@ -45,13 +47,27 @@ public class EdgesMaker : IMaker
 
     bool FaceIsInAdjacentCase(Face.FaceType faceType)
     {
-        return EdgeOnFaceIsDone(faceType) && EdgeOnFaceIsDone(RelativeFaceTypeGetter.GetRelativeRight(faceType));
+        if (rubiksCubeUpsideDown)
+        {
+            return EdgeOnFaceIsDone(faceType) && EdgeOnFaceIsDone(RelativeFaceTypeGetter.GetRelativeLeft(faceType));
+        }
+        else
+        {
+            return EdgeOnFaceIsDone(faceType) && EdgeOnFaceIsDone(RelativeFaceTypeGetter.GetRelativeRight(faceType));
+        }
     }
 
     IEnumerator AdjacentCaseAlgorithm(Face.FaceType faceType)
     {
         string[] movements = { "R", "U", "Ri", "U", "R", "U", "U", "Ri", "U" };
-        rubiksCube.ManipulateMultipleTimes(movements, RelativeFaceTypeGetter.GetRelativeLeft(faceType));
+        if (rubiksCubeUpsideDown)
+        {
+            rubiksCube.ManipulateMultipleTimes(movements, RelativeFaceTypeGetter.GetRelativeRight(faceType), rubiksCubeUpsideDown);
+        }
+        else
+        {
+            rubiksCube.ManipulateMultipleTimes(movements, RelativeFaceTypeGetter.GetRelativeLeft(faceType), rubiksCubeUpsideDown);
+        }
         yield return new WaitUntil(() => rubiksCube.readyToManipulate);
     }
 
@@ -63,7 +79,7 @@ public class EdgesMaker : IMaker
     IEnumerator OppositeCaseAlgorithm()
     {
         string[] movements = { "R", "U", "Ri", "U", "R", "U", "U", "Ri" };
-        rubiksCube.ManipulateMultipleTimes(movements);
+        rubiksCube.ManipulateMultipleTimes(movements, rubiksCubeUpsideDown:rubiksCubeUpsideDown);
         yield return new WaitUntil(() => rubiksCube.readyToManipulate);
     }
 
@@ -79,8 +95,17 @@ public class EdgesMaker : IMaker
     {
         try
         {
-            bool edgeOnFaceIsDone = rubiksCube.GetCube(faceType, 1, 2).GetColor(faceType) == (Face.Color)faceType &&
-                                    rubiksCube.GetCube(faceType, 2, 2).GetColor(faceType) == (Face.Color)faceType;
+            bool edgeOnFaceIsDone;
+            if (rubiksCubeUpsideDown)
+            {
+                edgeOnFaceIsDone = rubiksCube.GetCube(faceType, 3, 2).GetColor(faceType) == (Face.Color)faceType &&
+                                   rubiksCube.GetCube(faceType, 2, 2).GetColor(faceType) == (Face.Color)faceType;
+            }
+            else
+            {
+                edgeOnFaceIsDone = rubiksCube.GetCube(faceType, 1, 2).GetColor(faceType) == (Face.Color)faceType &&
+                                   rubiksCube.GetCube(faceType, 2, 2).GetColor(faceType) == (Face.Color)faceType;
+            }
             return edgeOnFaceIsDone;
         }
         catch // The cube return an error if it doesn't have the asked color (which is possible in runtime)
