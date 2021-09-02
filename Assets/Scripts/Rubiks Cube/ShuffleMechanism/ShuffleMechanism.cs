@@ -3,12 +3,13 @@ using UnityEngine;
 
 public static class ShuffleMechanism
 {
+    const float SHUFFLING_SPEED = 1500f;
+    const int NB_RANDOM_MOVEMENTS = 25;
+
     public static IEnumerator Shuffle(RubiksCube rubiksCube)
     {
-        const int NB_RANDOM_MOVEMENTS = 25;
-        float oldSpeed = Face.rotatingSpeed;
+        SpeedManager.Change(SHUFFLING_SPEED);
 
-        Face.rotatingSpeed = 1500f;
         string[] possibleMovements = { "R", "Ri", "L", "Li", "B", "Bi", "D", "Di", "F", "Fi", "U", "Ui" };
         for (int i = 0; i < NB_RANDOM_MOVEMENTS; i++)
         {
@@ -17,6 +18,7 @@ public static class ShuffleMechanism
             rubiksCube.Manipulate(randomMovement);
             yield return new WaitUntil(() => rubiksCube.readyToManipulate);
         }
-        Face.rotatingSpeed = oldSpeed;
+
+        SpeedManager.Reset();
     }
 }

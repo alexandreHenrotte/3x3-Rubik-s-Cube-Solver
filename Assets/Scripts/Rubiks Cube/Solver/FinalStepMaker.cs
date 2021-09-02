@@ -33,6 +33,8 @@ class FinalStepMaker : IMaker
             rubiksCube.Manipulate("U", rubiksCubeUpsideDown: true);
             yield return new WaitUntil(() => rubiksCube.readyToManipulate);
         }
+
+        finished = true;
     }
     
     Face.FaceType FindFaceTypeToWorkOn()

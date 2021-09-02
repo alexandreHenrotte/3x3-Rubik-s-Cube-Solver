@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class Solver
 {
+    const float SOLVING_SPEED = 1400f;
+    const float TIME_BETWEEN_STEPS = 0f;
+
     public static IEnumerator Start(RubiksCube rubiksCube)
     {
-        float oldSpeed = Face.rotatingSpeed;
-        Face.rotatingSpeed = 1000f;
+        SpeedManager.Change(SOLVING_SPEED);
 
         // Step makers
         WhiteCrossMaker whiteCrossMaker = new WhiteCrossMaker(rubiksCube);
@@ -22,45 +24,43 @@ public class Solver
         // Step 1
         rubiksCube.StartCoroutine(whiteCrossMaker.Work());
         yield return new WaitUntil(() => whiteCrossMaker.finished);
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(TIME_BETWEEN_STEPS);
 
         // Step 2
         rubiksCube.StartCoroutine(edgesMaker.Work());
         yield return new WaitUntil(() => edgesMaker.finished);
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(TIME_BETWEEN_STEPS);
 
         // Step 3
         rubiksCube.StartCoroutine(whiteCornersMaker.Work());
         yield return new WaitUntil(() => whiteCornersMaker.finished);
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(TIME_BETWEEN_STEPS);
 
         // Step 4
         rubiksCube.StartCoroutine(secondCrownMaker.Work());
         yield return new WaitUntil(() => secondCrownMaker.finished);
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(TIME_BETWEEN_STEPS);
 
         // Step 5
         rubiksCube.StartCoroutine(yellowCrossMaker.Work());
         yield return new WaitUntil(() => yellowCrossMaker.finished);
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(TIME_BETWEEN_STEPS);
 
         // Step 6
         rubiksCube.StartCoroutine(edgesMakerCubeUpsideDown.Work());
         yield return new WaitUntil(() => edgesMakerCubeUpsideDown.finished);
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(TIME_BETWEEN_STEPS);
 
         // Step 7
         rubiksCube.StartCoroutine(yellowCornersMaker.Work());
         yield return new WaitUntil(() => yellowCornersMaker.finished);
-        yield return new WaitForSeconds(2f);
-
-        Face.rotatingSpeed = 300f;
+        yield return new WaitForSeconds(TIME_BETWEEN_STEPS);
 
         // Step 8
         rubiksCube.StartCoroutine(finalStepMaker.Work());
         yield return new WaitUntil(() => finalStepMaker.finished);
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(TIME_BETWEEN_STEPS);
 
-        Face.rotatingSpeed = oldSpeed;
+        SpeedManager.Reset();
     }
 }

@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class Face
 {
-    public static float rotatingSpeed = 400f;
+    public const float DEFAULT_ROTATING_SPEED = 400f;
+    public static float rotatingSpeed = DEFAULT_ROTATING_SPEED;
 
     public enum FaceType
     {
