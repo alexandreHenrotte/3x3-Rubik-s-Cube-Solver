@@ -17,7 +17,6 @@ public class EdgesMaker : IMaker
     {
         while (!HasFinished())
         {
-            Debug.Log("Edges");
             foreach (Face.FaceType faceType in RelativeFaceTypeGetter.GetHorizontalFaceTypes())
             {
                 if (FaceIsInAdjacentCase(faceType))

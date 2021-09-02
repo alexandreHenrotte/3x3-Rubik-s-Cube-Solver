@@ -18,7 +18,6 @@ class SecondCrownMaker : IMaker
 
     public IEnumerator Work()
     {
-        Debug.Log("Second crown ");
         while (!HasFinished())
         {
             while (!SituationIsBlocked())
@@ -72,7 +71,6 @@ class SecondCrownMaker : IMaker
 
     IEnumerator MoveLeft(Face.FaceType relativeFrontFaceType)
     {
-        Debug.Log("Move left" + " : " + relativeFrontFaceType);
         string[] movements = { "Ui", "Li", "U", "L", "U", "F", "Ui", "Fi" };
         rubiksCube.ManipulateMultipleTimes(movements, relativeFrontFaceType, true);
         yield return new WaitUntil(() => rubiksCube.readyToManipulate);
@@ -80,7 +78,6 @@ class SecondCrownMaker : IMaker
 
     IEnumerator MoveRight(Face.FaceType relativeFrontFaceType)
     {
-        Debug.Log("Move right" + " : " + relativeFrontFaceType);
         string[]movements = new string[] { "U", "R", "Ui", "Ri", "Ui", "Fi", "U", "F" };
         rubiksCube.ManipulateMultipleTimes(movements, relativeFrontFaceType, true);
         yield return new WaitUntil(() => rubiksCube.readyToManipulate);

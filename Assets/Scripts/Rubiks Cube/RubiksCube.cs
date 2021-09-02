@@ -74,7 +74,7 @@ public class RubiksCube : MonoBehaviour
         }
     }
 
-    public IEnumerator ManipulateMultipleTimesRoutine(string[] movementCalls, Face.FaceType relativeFrontFace = Face.FaceType.FRONT, bool rubiksCubeUpsideDown = false)
+    IEnumerator ManipulateMultipleTimesRoutine(string[] movementCalls, Face.FaceType relativeFrontFace = Face.FaceType.FRONT, bool rubiksCubeUpsideDown = false)
     {
         if (readyToManipulate)
         {

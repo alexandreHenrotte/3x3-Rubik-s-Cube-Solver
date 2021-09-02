@@ -17,7 +17,6 @@ public class WhiteCrossMaker : IMaker
 
     public IEnumerator Work()
     {
-        Debug.Log("White cross");
         int nbCubesWellPlaced = NbCubesWellPlaced();
         while (!HasFinished())
         {
