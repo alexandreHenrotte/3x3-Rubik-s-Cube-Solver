@@ -17,6 +17,7 @@ public class Solver
         YellowCrossMaker yellowCrossMaker = new YellowCrossMaker(rubiksCube);
         EdgesMaker edgesMakerCubeUpsideDown = new EdgesMaker(rubiksCube, true);
         YellowCornersMaker yellowCornersMaker = new YellowCornersMaker(rubiksCube);
+        FinalStepMaker finalStepMaker = new FinalStepMaker(rubiksCube);
 
         // Step 1
         rubiksCube.StartCoroutine(whiteCrossMaker.Work());
@@ -48,11 +49,16 @@ public class Solver
         yield return new WaitUntil(() => edgesMakerCubeUpsideDown.finished);
         yield return new WaitForSeconds(2f);
 
-        Face.rotatingSpeed = 300f;
-
         // Step 7
         rubiksCube.StartCoroutine(yellowCornersMaker.Work());
         yield return new WaitUntil(() => yellowCornersMaker.finished);
+        yield return new WaitForSeconds(2f);
+
+        Face.rotatingSpeed = 300f;
+
+        // Step 8
+        rubiksCube.StartCoroutine(finalStepMaker.Work());
+        yield return new WaitUntil(() => finalStepMaker.finished);
         yield return new WaitForSeconds(2f);
 
         Face.rotatingSpeed = oldSpeed;

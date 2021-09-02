@@ -113,7 +113,7 @@ public class RubiksCube : MonoBehaviour
         }
     }
 
-    bool IsFinished()
+    public bool IsFinished()
     {
         foreach (Face.FaceType faceType in Enum.GetValues(typeof(Face.FaceType)))
         {

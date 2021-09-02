@@ -9,7 +9,7 @@ using UnityEngine;
 class YellowCornersMaker : IMaker
 {
     RubiksCube rubiksCube;
-    public bool finished;
+    public bool finished = false;
 
     public YellowCornersMaker(RubiksCube rubiksCube)
     {
@@ -48,6 +48,8 @@ class YellowCornersMaker : IMaker
                 yield return new WaitUntil(() => rubiksCube.readyToManipulate);
             }
         }
+
+        finished = true;
     }
 
     IEnumerator ManipulationAlgorithm(Face.FaceType relativeFrontFaceType)
