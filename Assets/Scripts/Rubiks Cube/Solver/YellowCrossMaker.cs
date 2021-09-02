@@ -35,8 +35,11 @@ public class YellowCrossMaker : IMaker
                 yield return new WaitUntil(() => rubiksCube.readyToManipulate);
             }
 
-            rubiksCube.StartCoroutine(ManipulationAlgorithm(Face.FaceType.FRONT, 3)); // not relative to any face type
-            yield return new WaitUntil(() => rubiksCube.readyToManipulate);
+            if (!HasFinished())
+            {
+                rubiksCube.StartCoroutine(ManipulationAlgorithm(Face.FaceType.FRONT, 3)); // not relative to any face type
+                yield return new WaitUntil(() => rubiksCube.readyToManipulate);
+            }
         }
 
         finished = true;
@@ -57,11 +60,6 @@ public class YellowCrossMaker : IMaker
 
         return rubiksCube.GetCube(relativeFrontFaceType, 3, 2).HasColorOnFaceType(Face.Color.YELLOW, Face.FaceType.BOTTOM) &&
                rubiksCube.GetCube(relativeRearUpsideDown, 3, 2).HasColorOnFaceType(Face.Color.YELLOW, Face.FaceType.BOTTOM);
-    }
-
-    bool OneMiddleCubeCase(Face.FaceType relativeFrontFaceType)
-    {
-        return !Letter_L_Case(relativeFrontFaceType) && !ThreeLineCubesCase(relativeFrontFaceType);
     }
 
     IEnumerator ManipulationAlgorithm(Face.FaceType relativeFrontFaceType, int nbRepetition)
