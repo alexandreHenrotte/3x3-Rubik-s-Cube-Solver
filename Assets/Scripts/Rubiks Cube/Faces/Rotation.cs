@@ -1,34 +1,31 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using static Face;
 
 public class Rotation
 {
-    public bool inversed;
     public bool finished = false;
     public Quaternion quaternionToReach;
 
-    public Rotation(Face face, bool inversed)
+    public Rotation(Face face, bool inverted)
     {
-        this.inversed = inversed;
-        setQuaternionToReach(face, inversed);
+        setQuaternionToReach(face, inverted);
     }
 
-    void setQuaternionToReach(Face face, bool inversed)
+    void setQuaternionToReach(Face face, bool inverted)
     {
-        int rotationInverter = inversed ? -1 : 1;
+        int rotationDirection = face.rotatingInverted ? -1 : 1;
+        int currentRotationInverter = inverted ? rotationDirection * -1 : rotationDirection * 1;
 
         switch (face.rotatingAxe)
         {
             case RotatingAxe.X:
-                quaternionToReach = face.rotatingParent.transform.rotation * Quaternion.Euler((90 * rotationInverter), 0, 0);
+                quaternionToReach = face.rotatingParent.transform.rotation * Quaternion.Euler((90 * currentRotationInverter), 0, 0);
                 break;
             case RotatingAxe.Y:
-                quaternionToReach = face.rotatingParent.transform.rotation * Quaternion.Euler(0, (90 * rotationInverter), 0);
+                quaternionToReach = face.rotatingParent.transform.rotation * Quaternion.Euler(0, (90 * currentRotationInverter), 0);
                 break;
             case RotatingAxe.Z:
-                quaternionToReach = face.rotatingParent.transform.rotation * Quaternion.Euler(0, 0, (90 * rotationInverter));
+                quaternionToReach = face.rotatingParent.transform.rotation * Quaternion.Euler(0, 0, (90 * currentRotationInverter));
                 break;
         }
     }

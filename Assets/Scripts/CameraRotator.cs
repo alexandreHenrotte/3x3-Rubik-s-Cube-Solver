@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
 public class CameraRotator : MonoBehaviour
 {
     public Transform target;
@@ -22,14 +19,14 @@ public class CameraRotator : MonoBehaviour
     private Vector2 swipeDirection; //swipe delta vector2
     private Quaternion cameraRot; // store the quaternion after the slerp operation
     private Touch touch;
-    private float distanceBetweenCameraAndTarget;
+    private float distanceBetweenCameraAndTarget = 25f;
 
     private float minXRotAngle = -80; //min angle around x axis
     private float maxXRotAngle = 80; // max angle around x axis
 
     //Mouse rotation related
-    private float rotX = 16; // around x
-    private float rotY = 33; // around y
+    private float rotX = 7.207f; // around x
+    private float rotY = 21.71f; // around y
     private void Awake()
     {
         if (mainCamera == null)

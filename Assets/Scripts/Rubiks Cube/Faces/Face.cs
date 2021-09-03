@@ -1,11 +1,11 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Face
 {
-    public static float rotatingSpeed = 400f;
+    public const float DEFAULT_ROTATING_SPEED = 400f;
+    public static float rotatingSpeed = DEFAULT_ROTATING_SPEED;
 
     public enum FaceType
     {
@@ -17,6 +17,16 @@ public class Face
         UP
     }
 
+    public enum Color
+    {
+        RED,
+        ORANGE,
+        GREEN,
+        BLUE,
+        YELLOW,
+        WHITE
+    }
+
     public enum RotatingAxe
     {
         X,
@@ -24,25 +34,27 @@ public class Face
         Z
     }
 
-    public List<GameObject> cubes = new List<GameObject>();
+    public Row[] rows = { new Row(), new Row(), new Row() };
+    public Column[] columns = { new Column(), new Column(), new Column() };
+    public FaceUpdater faceUpdater;
     public GameObject rotatingParent;
     public RotatingAxe rotatingAxe;
+    public bool rotatingInverted;
     Rotation currentRotation;
 
-    public Face(FaceUpdater faceUpdater, GameObject rotatingParent, RotatingAxe rotatingAxe)
+    public Face(FaceUpdater faceUpdater, GameObject rotatingParent, RotatingAxe rotatingAxe, bool rotatingInverted)
     {
+        this.faceUpdater = faceUpdater;
         this.rotatingParent = rotatingParent;
         this.rotatingAxe = rotatingAxe;
+        this.rotatingInverted = rotatingInverted;
 
         faceUpdater.Init(this);
     }
 
-    public void Rotate(RubiksCube rubiksCube, bool inversed=false)
+    public void Rotate(RubiksCube rubiksCube, bool inverted = false)
     {
-        if (rubiksCube.AllFacesAreStatic())
-        {
-            this.currentRotation = new Rotation(this, inversed);
-        }  
+        this.currentRotation = new Rotation(this, inverted);
     }
 
     public void RotateIfNecessary()
@@ -58,9 +70,21 @@ public class Face
 
     void SetParent()
     {
-        foreach (GameObject cube in cubes)
+        // Rows
+        foreach (Row row in rows)
         {
-            cube.transform.SetParent(rotatingParent.transform);
+            foreach (GameObject cube in row.cubes)
+            {
+                cube.transform.SetParent(rotatingParent.transform);
+            }
+        }
+        // Columns
+        foreach (Column column in columns)
+        {
+            foreach (GameObject cube in column.cubes)
+            {
+                cube.transform.SetParent(rotatingParent.transform);
+            }
         }
     }
 
@@ -77,5 +101,44 @@ public class Face
     public bool RotationFinished()
     {
         return currentRotation == null || currentRotation.finished;
+    }
+
+    public Cube GetCube(int rowNumber, int columnNumber)
+    {
+        Row row = rows[rowNumber - 1];
+        Column column = columns[columnNumber - 1];
+        GameObject cube = row.cubes.Intersect(column.cubes).ToArray()[0];
+        return cube.GetComponent<Cube>();
+    }
+
+    public List<GameObject> GetAllCubes()
+    {
+        List<GameObject> cubes = new List<GameObject>();
+
+        // Row
+        foreach (Row row in rows)
+        {
+            foreach (GameObject cube in row.cubes)
+            {
+                if (!cubes.Contains(cube))
+                {
+                    cubes.Add(cube);
+                }
+            }
+        }
+
+        // Column
+        foreach (Column column in columns)
+        {
+            foreach (GameObject cube in column.cubes)
+            {
+                if (!cubes.Contains(cube))
+                {
+                    cubes.Add(cube);
+                }
+            }
+        }
+
+        return cubes;
     }
 }
