@@ -50,8 +50,6 @@ class WhiteCornersMaker : IMaker
                 {
                     rubiksCube.StartCoroutine(BringDownCube(faceType));
                     yield return new WaitUntil(() => rubiksCube.readyToManipulate);
-                    rubiksCube.StartCoroutine(PlaceCubeInHisCorner(cube, faceType));
-                    yield return new WaitUntil(() => rubiksCube.readyToManipulate);
                 }
                 else if (cubeHasWhite && CubeMatchBothFacesOnTop(cube) && !CubeIsOriented(cube))
                 {
