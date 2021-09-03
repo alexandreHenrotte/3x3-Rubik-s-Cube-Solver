@@ -37,7 +37,7 @@ public class YellowCrossMaker : IMaker
 
             if (!HasFinished())
             {
-                rubiksCube.StartCoroutine(ManipulationAlgorithm(Face.FaceType.FRONT, 3)); // not relative to any face type
+                rubiksCube.StartCoroutine(ManipulationAlgorithm(Face.FaceType.FRONT, 1)); // not relative to any face type
                 yield return new WaitUntil(() => rubiksCube.readyToManipulate);
             }
         }
