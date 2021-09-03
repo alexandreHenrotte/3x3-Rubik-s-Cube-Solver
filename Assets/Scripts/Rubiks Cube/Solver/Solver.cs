@@ -22,41 +22,49 @@ public class Solver
         FinalStepMaker finalStepMaker = new FinalStepMaker(rubiksCube);
 
         // Step 1
+        Debug.Log("white cross");
         rubiksCube.StartCoroutine(whiteCrossMaker.Work());
         yield return new WaitUntil(() => whiteCrossMaker.finished);
         yield return new WaitForSeconds(TIME_BETWEEN_STEPS);
 
         // Step 2
+        Debug.Log("edges");
         rubiksCube.StartCoroutine(edgesMaker.Work());
         yield return new WaitUntil(() => edgesMaker.finished);
         yield return new WaitForSeconds(TIME_BETWEEN_STEPS);
 
         // Step 3
+        Debug.Log("white corners");
         rubiksCube.StartCoroutine(whiteCornersMaker.Work());
         yield return new WaitUntil(() => whiteCornersMaker.finished);
         yield return new WaitForSeconds(TIME_BETWEEN_STEPS);
 
         // Step 4
+        Debug.Log("second crown");
         rubiksCube.StartCoroutine(secondCrownMaker.Work());
         yield return new WaitUntil(() => secondCrownMaker.finished);
         yield return new WaitForSeconds(TIME_BETWEEN_STEPS);
 
         // Step 5
+        Debug.Log("yellow cross");
         rubiksCube.StartCoroutine(yellowCrossMaker.Work());
         yield return new WaitUntil(() => yellowCrossMaker.finished);
         yield return new WaitForSeconds(TIME_BETWEEN_STEPS);
 
         // Step 6
+        Debug.Log("edges cube upside down");
         rubiksCube.StartCoroutine(edgesMakerCubeUpsideDown.Work());
         yield return new WaitUntil(() => edgesMakerCubeUpsideDown.finished);
         yield return new WaitForSeconds(TIME_BETWEEN_STEPS);
 
         // Step 7
+        Debug.Log("yellow corners");
         rubiksCube.StartCoroutine(yellowCornersMaker.Work());
         yield return new WaitUntil(() => yellowCornersMaker.finished);
         yield return new WaitForSeconds(TIME_BETWEEN_STEPS);
 
         // Step 8
+        Debug.Log("final step");
         rubiksCube.StartCoroutine(finalStepMaker.Work());
         yield return new WaitUntil(() => finalStepMaker.finished);
         yield return new WaitForSeconds(TIME_BETWEEN_STEPS);
